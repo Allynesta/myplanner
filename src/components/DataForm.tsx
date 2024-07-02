@@ -84,9 +84,9 @@ const DataForm: React.FC<Props> = ({ onSubmit, selectedDate }) => {
 								<div className="error-message">{errors.price}</div>
 							) : null}
 						</div>
-						{!selectedDate && (
+						{!selectedDate ? (
 							<div className="error-message">Date selection is required</div>
-						)}
+						) : null}
 						<button type="submit">Submit</button>
 					</Form>
 				)}
