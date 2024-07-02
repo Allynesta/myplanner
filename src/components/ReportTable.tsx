@@ -9,11 +9,7 @@ interface ReportData {
 	price: number;
 }
 
-interface Props {
-	reportData: ReportData[];
-}
-
-const ReportTable: React.FC<Props> = ({ reportData }) => {
+const ReportTable = () => {
 	const [showData, setShowData] = useState<ReportData[]>([]);
 
 	useEffect(() => {
@@ -21,8 +17,10 @@ const ReportTable: React.FC<Props> = ({ reportData }) => {
 		const storedData = localStorage.getItem("plannerData");
 		if (storedData) {
 			setShowData(JSON.parse(storedData));
+		} else {
+			setShowData(showData);
 		}
-	}, [reportData]);
+	}, [showData]);
 
 	const myFunction = () => {
 		const input = (
