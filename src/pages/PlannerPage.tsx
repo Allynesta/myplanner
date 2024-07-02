@@ -24,7 +24,7 @@ const PlannerPage = () => {
 		price: number;
 	}) => {
 		const newReport: ReportData = {
-			id: reportData.length + 1, // Generate a new ID
+			id: Date.now(), // Generate a new ID
 			location: data.location,
 			description: data.description,
 			date: selectedDate ? selectedDate : new Date(),

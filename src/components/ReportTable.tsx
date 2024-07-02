@@ -18,6 +18,24 @@ interface Props {
 
 const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 	const [showData, setShowData] = useState<ReportData[]>(reportData);
+	const [filter, setFilter] = useState<string>("All");
+
+	useEffect(() => {
+		// Filter the data based on the selected filter value
+		if (filter === "All") {
+			setShowData(reportData);
+		} else {
+			setShowData(
+				reportData.filter((data) =>
+					data.location.toUpperCase().includes(filter.toUpperCase())
+				)
+			);
+		}
+	}, [filter, reportData]);
+
+	const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+		setFilter(event.target.value);
+	};
 
 	const handleDeleteItem = (id: number) => {
 		const updatedReportData = showData.filter((data) => data.id !== id);
@@ -25,15 +43,6 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 		localStorage.setItem("plannerData", JSON.stringify(updatedReportData));
 		onDelete(id);
 	};
-
-	useEffect(() => {
-		const storedData = localStorage.getItem("plannerData");
-		if (storedData) {
-			setShowData(JSON.parse(storedData));
-		} else {
-			setShowData(reportData);
-		}
-	}, [reportData]);
 
 	const filterByLocation = () => {
 		const input = (
@@ -58,20 +67,25 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 			<table id="myTable">
 				<thead>
 					<tr className="header">
-						<th style={{ width: "20%" }}>ID</th>
-						<th style={{ width: "20%" }}>Location</th>
-						<th style={{ width: "20%" }}>Description</th>
-						<th style={{ width: "20%" }}>Date</th>
-						<th style={{ width: "10%" }}>Pax</th>
-						<th style={{ width: "10%" }}>Price</th>
+						<th style={{ width: "25%" }}>
+							<div>
+								<select id="countriesDropdown" onChange={handleFilterChange}>
+									<option>All</option>
+									<option>Pieter</option>
+									<option>Morne</option>
+									<option>Cascade</option>
+								</select>
+							</div>
+						</th>
+						<th style={{ width: "25%" }}>Date</th>
+						<th style={{ width: "25%" }}>Pax</th>
+						<th style={{ width: "25%" }}>Price</th>
 					</tr>
 				</thead>
 				<tbody>
 					{showData.map((data) => (
 						<tr key={data.id}>
-							<td>{data.id}</td>
 							<td>{data.location}</td>
-							<td>{data.description}</td>
 							<td>{new Date(data.date).toLocaleDateString()}</td>
 							<td>{data.pax}</td>
 							<td>{data.price}</td>
