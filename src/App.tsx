@@ -2,12 +2,13 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import PlannerPage from "./pages/PlannerPage";
 import ReportPage from "./pages/ReportPage";
+import "./styles/nav.css";
 
 function App() {
 	return (
 		<Router>
 			<nav>
-				<ul>
+				<ul className="navList">
 					<li>
 						<Link to="/">Home</Link>
 					</li>

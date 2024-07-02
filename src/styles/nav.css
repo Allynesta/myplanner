@@ -1,0 +1,9 @@
+ul.navList{
+    display: flex;
+    justify-content: space-around;
+}
+
+ul.navList li {
+    border: none;
+    background-color: transparent;
+}
