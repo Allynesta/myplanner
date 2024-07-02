@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "../styles/reporttable.css";
 
 // Define the structure of the data each report will have
 interface ReportData {

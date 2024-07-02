@@ -1,5 +1,6 @@
 import ReportItem from "./ReportItem";
 import React from "react";
+import "../styles/report.css";
 
 // Define the structure of the data each report will have
 interface ReportData {
