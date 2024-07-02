@@ -16,7 +16,7 @@ interface Props {
 }
 
 const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
-	const [showData, setShowData] = useState<ReportData[]>([]);
+	const [showData, setShowData] = useState<ReportData[]>(reportData);
 
 	const handleDeleteItem = (id: number) => {
 		const updatedReportData = showData.filter((data) => data.id !== id);
@@ -26,7 +26,6 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 	};
 
 	useEffect(() => {
-		// Load stored data from localStorage
 		const storedData = localStorage.getItem("plannerData");
 		if (storedData) {
 			setShowData(JSON.parse(storedData));
@@ -35,31 +34,21 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 		}
 	}, [reportData]);
 
-	const myFunction = () => {
+	const filterByLocation = () => {
 		const input = (
 			document.getElementById("myInput") as HTMLInputElement
 		).value.toUpperCase();
-		const table = document.getElementById("myTable") as HTMLTableElement;
-		const tr = table.getElementsByTagName("tr");
-
-		for (let i = 1; i < tr.length; i++) {
-			const td = tr[i].getElementsByTagName("td")[1]; // Assuming filtering by location
-			if (td) {
-				const txtValue = td.textContent || td.innerText;
-				if (txtValue.toUpperCase().indexOf(input) > -1) {
-					tr[i].style.display = "";
-				} else {
-					tr[i].style.display = "none";
-				}
-			}
-		}
+		const filteredData = reportData.filter((data) =>
+			data.location.toUpperCase().includes(input)
+		);
+		setShowData(filteredData);
 	};
 
 	return (
 		<div>
 			<input
 				id="myInput"
-				onKeyUp={myFunction}
+				onKeyUp={filterByLocation}
 				placeholder="Search for locations.."
 				title="Type in a location"
 				type="text"
