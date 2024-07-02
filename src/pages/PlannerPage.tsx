@@ -8,7 +8,7 @@ interface ReportData {
 	location: string;
 	description: string;
 	date: Date;
-	pack: number;
+	pax: number;
 	price: number;
 }
 
@@ -19,7 +19,7 @@ const PlannerPage = () => {
 	const handleSubmit = (data: {
 		location: string;
 		description: string;
-		pack: number;
+		pax: number;
 		price: number;
 	}) => {
 		const newReport: ReportData = {
@@ -27,7 +27,7 @@ const PlannerPage = () => {
 			location: data.location,
 			description: data.description,
 			date: selectedDate ? selectedDate : new Date(),
-			pack: data.pack,
+			pax: data.pax,
 			price: data.price,
 		};
 		const updatedReportData = [...reportData, newReport];
@@ -66,7 +66,7 @@ const PlannerPage = () => {
 					description: data.description,
 					date: new Date(data.date),
 					location: data.location,
-					pack: data.pack,
+					pax: data.pax,
 					price: data.price,
 				}))}
 			/>

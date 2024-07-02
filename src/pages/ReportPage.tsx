@@ -8,7 +8,7 @@ interface ReportData {
 	location: string;
 	description: string;
 	date: Date;
-	pack: number;
+	pax: number;
 	price: number;
 }
 

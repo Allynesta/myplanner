@@ -6,7 +6,7 @@ interface ReportData {
 	location: string;
 	description: string;
 	date: Date;
-	pack: number;
+	pax: number;
 	price: number;
 }
 
@@ -17,7 +17,7 @@ const sampleReportData: ReportData[] = [
 		location: "New York",
 		description: "Report description",
 		date: new Date(),
-		pack: 5,
+		pax: 5,
 		price: 100,
 	},
 	// Add more sample data as needed

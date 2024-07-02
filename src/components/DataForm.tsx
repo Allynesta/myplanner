@@ -3,7 +3,7 @@ import { Formik, Form, Field } from "formik";
 interface FormData {
 	location: string;
 	description: string;
-	pack: number;
+	pax: number;
 	price: number;
 }
 
@@ -19,7 +19,7 @@ const DataForm: React.FC<Props> = ({ onSubmit }) => {
 				initialValues={{
 					location: "",
 					description: "",
-					pack: Number(""),
+					pax: Number(""),
 					price: Number(""),
 				}}
 				onSubmit={(values, actions) => {
@@ -43,8 +43,8 @@ const DataForm: React.FC<Props> = ({ onSubmit }) => {
 						<Field id="description" name="description" as="textarea" />
 					</div>
 					<div>
-						<label htmlFor="pack">Pack:</label>
-						<Field id="pack" name="pack" type="number" />
+						<label htmlFor="pax">Pax:</label>
+						<Field id="pax" name="pax" type="number" />
 					</div>
 					<div>
 						<label htmlFor="price">Price:</label>

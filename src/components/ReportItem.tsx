@@ -5,7 +5,7 @@ interface ReportData {
 	date: Date;
 	location: string;
 	description: string;
-	pack: number;
+	pax: number;
 	price: number;
 }
 
@@ -25,7 +25,7 @@ const ReportItem: React.FC<Props> = ({ data, onDelete }) => {
 			<strong>location:</strong> {data.location}
 			<br />
 			<br />
-			<strong>pack:</strong> {data.pack}
+			<strong>pax:</strong> {data.pax}
 			<br />
 			<br />
 			<strong>price:</strong> {data.price}
