@@ -62,7 +62,7 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 						<th style={{ width: "20%" }}>Location</th>
 						<th style={{ width: "20%" }}>Description</th>
 						<th style={{ width: "20%" }}>Date</th>
-						<th style={{ width: "10%" }}>pax</th>
+						<th style={{ width: "10%" }}>Pax</th>
 						<th style={{ width: "10%" }}>Price</th>
 					</tr>
 				</thead>
