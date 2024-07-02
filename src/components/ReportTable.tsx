@@ -55,7 +55,6 @@ const ReportTable = () => {
 			<table id="myTable">
 				<thead>
 					<tr className="header">
-						<th style={{ width: "20%" }}>ID</th>
 						<th style={{ width: "20%" }}>Location</th>
 						<th style={{ width: "20%" }}>Description</th>
 						<th style={{ width: "20%" }}>Date</th>
