@@ -38,10 +38,12 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 	};
 
 	const handleDeleteItem = (id: number) => {
-		const updatedReportData = showData.filter((data) => data.id !== id);
-		setShowData(updatedReportData);
-		localStorage.setItem("plannerData", JSON.stringify(updatedReportData));
-		onDelete(id);
+		if (window.confirm("Are you sure you want to delete this item?")) {
+			const updatedReportData = showData.filter((data) => data.id !== id);
+			setShowData(updatedReportData);
+			localStorage.setItem("plannerData", JSON.stringify(updatedReportData));
+			onDelete(id);
+		}
 	};
 
 	const filterByLocation = () => {
@@ -64,22 +66,23 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 				type="text"
 			/>
 
+			<div>
+				<select id="countriesDropdown" onChange={handleFilterChange}>
+					<option>All</option>
+					<option>Pieter</option>
+					<option>Morne</option>
+					<option>Cascade</option>
+				</select>
+			</div>
+
 			<table id="myTable">
 				<thead>
 					<tr className="header">
-						<th style={{ width: "25%" }}>
-							<div>
-								<select id="countriesDropdown" onChange={handleFilterChange}>
-									<option>All</option>
-									<option>Pieter</option>
-									<option>Morne</option>
-									<option>Cascade</option>
-								</select>
-							</div>
-						</th>
-						<th style={{ width: "25%" }}>Date</th>
-						<th style={{ width: "25%" }}>Pax</th>
-						<th style={{ width: "25%" }}>Price</th>
+						<th style={{ width: "20%" }}>Location</th>
+						<th style={{ width: "20%" }}>Date</th>
+						<th style={{ width: "20%" }}>Pax</th>
+						<th style={{ width: "20%" }}>Price</th>
+						<th style={{ width: "20%" }}></th>
 					</tr>
 				</thead>
 				<tbody>

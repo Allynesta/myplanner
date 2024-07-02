@@ -41,15 +41,15 @@ const DataForm: React.FC<Props> = ({ onSubmit }) => {
 
 					<div>
 						<label htmlFor="description">Description:</label>
-						<Field id="description" name="description" as="textarea" />
+						<Field id="description" required name="description" as="textarea" />
 					</div>
 					<div>
 						<label htmlFor="pax">Pax:</label>
-						<Field id="pax" name="pax" type="number" />
+						<Field id="pax" required name="pax" type="number" />
 					</div>
 					<div>
 						<label htmlFor="price">Price:</label>
-						<Field id="price" name="price" type="number" />
+						<Field id="price" required name="price" type="number" />
 					</div>
 					<button type="submit">Submit</button>
 				</Form>
