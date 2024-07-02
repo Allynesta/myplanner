@@ -1,9 +1,35 @@
-ul.navList{
-    display: flex;
-    justify-content: space-around;
+.navList {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
+
+
 
 ul.navList li {
     border: none;
     background-color: transparent;
 }
+
+.navList a {
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .navList a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .navList {
+      flex-direction: column;
+    }
+  
+    .navList li {
+      margin-bottom: 10px;
+    }
+  }

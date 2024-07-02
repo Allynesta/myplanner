@@ -30,3 +30,12 @@ ul {
     background-color: #c0392b;
   }
   
+  @media (max-width: 768px) {
+    li {
+      padding: 10px;
+    }
+  
+    button {
+      padding: 5px 8px;
+    }
+  }
