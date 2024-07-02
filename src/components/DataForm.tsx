@@ -1,4 +1,5 @@
 import { Formik, Form, Field } from "formik";
+import "../styles/dataform.css";
 
 interface FormData {
 	location: string;
