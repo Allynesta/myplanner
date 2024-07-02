@@ -51,6 +51,16 @@ form {
     }
   }
 
+
+  /* src/styles/dataform.css */
+
+.error-message {
+  color: red;
+  font-size: 0.875rem; /* Adjust font size as needed */
+  margin-top: 0.25rem; /* Space between input and error message */
+}
+
+
   /* Calender.css */
 .react-datepicker-wrapper,
 .react-datepicker__input-container input {
