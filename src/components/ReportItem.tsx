@@ -16,8 +16,9 @@ interface Props {
 
 const ReportItem: React.FC<Props> = ({ data, onDelete }) => {
 	const handleDelete = () => {
-		console.log("delete");
-		onDelete(data.id);
+		if (window.confirm("Are you sure you want to delete this item?")) {
+			onDelete(data.id);
+		}
 	};
 
 	return (

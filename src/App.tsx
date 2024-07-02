@@ -25,7 +25,10 @@ const App: React.FC = () => {
 			</nav>
 			<Routes>
 				<Route path="/" element={<PlannerPage />} />
-				<Route path="/Report-Table" element={<ReportPage />} />
+				<Route
+					path="/Report-Table"
+					element={<ReportPage onDelete={handleDelete} />}
+				/>
 			</Routes>
 		</Router>
 	);

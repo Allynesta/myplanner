@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import ReportTable from "../components/ReportTable";
-import sampleReportData from "../data/sampleReportData";
 
 // Define the structure of the data each report will have
 interface ReportData {
@@ -17,17 +16,20 @@ interface Props {
 	onDelete: (id: number) => void;
 }
 
-const ReportPage: React.FC<Props> = ({ reportData, onDelete }) => {
-	const [data, setReportData] = useState<ReportData[]>([]);
+const ReportPage: React.FC<Props> = ({ onDelete }) => {
+	const [data, setData] = useState<ReportData[]>([]);
 
 	useEffect(() => {
-		// Use sampleReportData if no reportData is provided
-		setReportData(reportData || sampleReportData);
-	}, [reportData]);
+		// Retrieve data from localStorage
+		const storedData = localStorage.getItem("plannerData");
+		if (storedData) {
+			setData(JSON.parse(storedData)); // Use data from localStorage if available
+		}
+	}, []);
 
 	const handleDelete = (id: number) => {
 		const updatedData = data.filter((data) => data.id !== id);
-		setReportData(updatedData);
+		setData(updatedData);
 		onDelete(id);
 	};
 

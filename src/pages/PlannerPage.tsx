@@ -16,6 +16,7 @@ const PlannerPage = () => {
 	const [reportData, setReportData] = useState<ReportData[]>([]);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
+	// Handle form submission
 	const handleSubmit = (data: {
 		location: string;
 		description: string;
@@ -36,11 +37,13 @@ const PlannerPage = () => {
 		console.log(data);
 	};
 
+	// Handle date change from calendar
 	const handleDateChange = (date: Date) => {
 		console.log(date);
 		setSelectedDate(date);
 	};
 
+	// Handle item deletion
 	const handleDeleteItem = (id: number) => {
 		const updatedReportData = reportData.filter((data) => data.id !== id);
 		setReportData(updatedReportData);

@@ -19,8 +19,8 @@ const DataForm: React.FC<Props> = ({ onSubmit }) => {
 				initialValues={{
 					location: "",
 					description: "",
-					pax: Number(""),
-					price: Number(""),
+					pax: 0, // Simplified initialization
+					price: 0, // Simplified initialization
 				}}
 				onSubmit={(values, actions) => {
 					onSubmit(values);

@@ -8,11 +8,13 @@ interface Props {
 
 const Calender: React.FC<Props> = ({ onSelect }) => {
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+	// Function to check if the date is in the future
 	const passedDays = (selectedDate: Date) => new Date() < selectedDate;
 
-	const handleDateCHange = (date: Date | null) => {
+	const handleDateChange = (date: Date | null) => {
 		setSelectedDate(date);
-		onSelect(date as Date);
+		if (date) onSelect(date); // Ensure date is not null before calling onSelect
 	};
 
 	return (
@@ -23,7 +25,7 @@ const Calender: React.FC<Props> = ({ onSelect }) => {
 				showMonthDropdown
 				showYearDropdown
 				selected={selectedDate}
-				onChange={handleDateCHange}
+				onChange={handleDateChange}
 				filterDate={passedDays}
 			/>
 		</div>
