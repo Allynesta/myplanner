@@ -52,41 +52,39 @@ const DataForm: React.FC<Props> = ({ onSubmit, selectedDate }) => {
 					<Form>
 						<div>
 							<label htmlFor="location">Location:</label>
+							{errors.location && touched.location ? (
+								<div className="error-message">{errors.location}</div>
+							) : null}
 							<Field id="location" name="location" as="select">
 								<option value="">Select location</option>
 								<option value="pieter">Pieter Both</option>
 								<option value="morne">Le Morne</option>
 								<option value="cascade">7 Cascades</option>
 							</Field>
-							{errors.location && touched.location ? (
-								<div className="error-message">{errors.location}</div>
-							) : null}
 						</div>
 
 						<div>
 							<label htmlFor="description">Description:</label>
-							<Field id="description" name="description" as="textarea" />
 							{errors.description && touched.description ? (
 								<div className="error-message">{errors.description}</div>
 							) : null}
+							<Field id="description" name="description" as="textarea" />
 						</div>
 						<div>
 							<label htmlFor="pax">Pax:</label>
-							<Field id="pax" name="pax" type="number" />
 							{errors.pax && touched.pax ? (
 								<div className="error-message">{errors.pax}</div>
 							) : null}
+							<Field id="pax" name="pax" type="number" />
 						</div>
 						<div>
 							<label htmlFor="price">Price:</label>
-							<Field id="price" name="price" type="number" />
 							{errors.price && touched.price ? (
 								<div className="error-message">{errors.price}</div>
 							) : null}
+							<Field id="price" name="price" type="number" />
 						</div>
-						{!selectedDate ? (
-							<div className="error-message">Date selection is required</div>
-						) : null}
+
 						<button type="submit">Submit</button>
 					</Form>
 				)}

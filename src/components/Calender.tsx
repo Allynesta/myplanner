@@ -40,7 +40,7 @@ const Calender: React.FC<Props> = ({ onSelect }) => {
 				onChange={handleDateChange}
 				dateFormat="MMMM d, yyyy"
 			/>
-			{!selectedDate && <div className="error-message">{error}</div>}{" "}
+			{error && <div className="error-message">{error}</div>}{" "}
 			{/* Display error message if present */}
 		</div>
 	);
