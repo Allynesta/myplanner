@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import PlannerPage from "./pages/PlannerPage";
 import ReportPage from "./pages/ReportPage";
 import "./styles/nav.css";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./pages/Dashboard";
 
 const App: React.FC = () => {
 	// Implement the delete handler function
