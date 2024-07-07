@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import PlannerPage from "./pages/PlannerPage";
 import ReportPage from "./pages/ReportPage";
 import "./styles/nav.css";
+import Dashboard from "./components/Dashboard";
 
 const App: React.FC = () => {
 	// Implement the delete handler function
@@ -21,6 +22,9 @@ const App: React.FC = () => {
 					<li>
 						<Link to="/Report-Table">Report Table</Link>
 					</li>
+					<li>
+						<Link to="/Dashboard">Dashboard</Link>
+					</li>
 				</ul>
 			</nav>
 			<Routes>
@@ -29,6 +33,7 @@ const App: React.FC = () => {
 					path="/Report-Table"
 					element={<ReportPage onDelete={handleDelete} />}
 				/>
+				<Route path="/Dashboard" element={<Dashboard />} />
 			</Routes>
 		</Router>
 	);
