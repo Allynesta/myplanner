@@ -33,15 +33,21 @@ const Dashboard = () => {
 		}
 	}, []);
 
+	// Handle date change, open DataForm
 	const handleDateChange = (value: Date | Date[] | null) => {
 		if (Array.isArray(value)) {
 			setValue(value[0]);
 		} else {
 			setValue(value);
 		}
-		setShowForm(true);
+		if (!selectedReport) {
+			setShowForm(true);
+		} else {
+			setSelectedReport(null); // Reset selected report when date changes
+		}
 	};
 
+	// Handle form submission, close DataForm
 	const handleSubmit = (data: {
 		location: string;
 		description: string;
@@ -59,7 +65,7 @@ const Dashboard = () => {
 		const updatedReportData = [...reportData, newReport];
 		setReportData(updatedReportData);
 		localStorage.setItem("plannerData", JSON.stringify(updatedReportData));
-		setShowForm(false);
+		setShowForm(false); // Close DataForm after submission
 		setValue(null);
 	};
 
@@ -73,7 +79,10 @@ const Dashboard = () => {
 					<div
 						key={report.id}
 						className="card"
-						onClick={() => setSelectedReport(report)}
+						onClick={() => {
+							setSelectedReport(report); // Open report details when card is clicked
+							setShowForm(false); // Close DataForm if it's open
+						}}
 					>
 						<span>{report.location}</span>
 					</div>

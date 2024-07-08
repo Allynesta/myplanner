@@ -40,11 +40,7 @@
   color: #fff;
 }
 
-.react-calendar__month-view__weekdays > div:nth-child(6),
-.react-calendar__month-view__weekdays > div:nth-child(7) {
-  background-color: #ffa07a;
-  color: #fff;
-}
+
 
 .react-calendar__tile {
   background-color: #fff;
@@ -80,6 +76,7 @@
   color: #333;
 }
 
+
 .card {
   background-color: #fff;
   padding: 10px;
@@ -101,4 +98,9 @@
 .card > div > span {
   font-weight: bold;
   margin-right: 10px;
+}
+
+
+.ReactModal__Content.ReactModal__Content--after-open {
+  height: fit-content;
 }
