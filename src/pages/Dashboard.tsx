@@ -3,6 +3,7 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import DataForm from "../components/DataForm";
 import Modal from "react-modal";
+import "../styles/dashboard.css";
 
 interface ReportData {
 	id: number;
@@ -17,6 +18,7 @@ const Dashboard = () => {
 	const [value, setValue] = useState<Date | null>(null);
 	const [showForm, setShowForm] = useState(false);
 	const [reportData, setReportData] = useState<ReportData[]>([]);
+	const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
 
 	useEffect(() => {
 		const storedData = localStorage.getItem("plannerData");
@@ -62,40 +64,63 @@ const Dashboard = () => {
 	};
 
 	const tileContent = ({ date }: { date: Date }) => {
-		const report = reportData.find(
+		const reports = reportData.filter(
 			(report) => report.date.toLocaleDateString() === date.toLocaleDateString()
 		);
-		if (report) {
-			return (
-				<div>
-					<span>{report.location}</span>
-					<br />
-					<span>{report.description}</span>
-					<br />
-					<span>Pax: {report.pax}</span>
-					<br />
-					<span>Price: {report.price}</span>
-				</div>
-			);
-		}
-		return null;
+		return (
+			<div>
+				{reports.map((report) => (
+					<div
+						key={report.id}
+						className="card"
+						onClick={() => setSelectedReport(report)}
+					>
+						<span>{report.location}</span>
+					</div>
+				))}
+			</div>
+		);
 	};
 
 	return (
-		<div>
+		<div className="dashboard">
 			<Calendar
 				onChange={(value) => handleDateChange(value as Date | Date[] | null)}
 				value={value}
 				className="custom-calendar"
 				tileContent={tileContent}
 			/>
-			<Modal
-				ariaHideApp={false}
-				isOpen={showForm}
-				onRequestClose={() => setShowForm(false)}
-			>
-				<DataForm onSubmit={handleSubmit} selectedDate={value as Date} />
-			</Modal>
+			{showForm && (
+				<Modal
+					ariaHideApp={false}
+					isOpen={showForm}
+					onRequestClose={() => setShowForm(false)}
+				>
+					<DataForm onSubmit={handleSubmit} selectedDate={value as Date} />
+				</Modal>
+			)}
+			{selectedReport && (
+				<Modal
+					ariaHideApp={false}
+					isOpen={!!selectedReport}
+					onRequestClose={() => setSelectedReport(null)}
+				>
+					<div className="card">
+						<div>
+							<span>Location:</span> {selectedReport.location}
+						</div>
+						<div>
+							<span>Description:</span> {selectedReport.description}
+						</div>
+						<div>
+							<span>Pax:</span> {selectedReport.pax}
+						</div>
+						<div>
+							<span>Price:</span> {selectedReport.price}
+						</div>
+					</div>
+				</Modal>
+			)}
 		</div>
 	);
 };

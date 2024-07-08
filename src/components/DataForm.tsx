@@ -85,7 +85,9 @@ const DataForm: React.FC<Props> = ({ onSubmit, selectedDate }) => {
 							<Field id="price" name="price" type="number" />
 						</div>
 
-						<button type="submit">Submit</button>
+						<button className="btn-submit" type="submit">
+							Submit
+						</button>
 					</Form>
 				)}
 			</Formik>

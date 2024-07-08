@@ -1,41 +1,40 @@
-/* Report.css */
 ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  background-color: white;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: var(--form-shadow);
+}
+
+li strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+button {
+  background-color: var(--button-bg-color);
+  color: var(--nav-text-color);
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--button-hover-bg-color);
+}
+
+@media (max-width: 768px) {
   li {
-    background-color: white;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
   }
-  
-  li strong {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
+
   button {
-    background-color: #e74c3c;
-    color: #333;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
+    padding: 5px 8px;
   }
-  
-  button:hover {
-    background-color: #c0392b;
-  }
-  
-  @media (max-width: 768px) {
-    li {
-      padding: 10px;
-    }
-  
-    button {
-      padding: 5px 8px;
-    }
-  }
+}

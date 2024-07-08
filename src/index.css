@@ -1,16 +1,22 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --main-bg-color: #fff;
+  --main-text-color: #222;
+  --form-button-bg-color: #3498db;
+  --button-bg-color: #3498db;
+  --button-hover-bg-color: #c0392b;
+  --calendar-bg-color: #f8f8fa;
+  --form-bg-color: white;
+  --form-border-color: #ccc;
+  --form-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  --nav-text-color: #333;
+  --nav-hover-text-color: underline;
+  --table-bg-color: #3498db;
+  --table-hover-bg-color: #f1f1f1;
+  --error-text-color: red;
 }
 
 a {
