@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import DataForm from "../components/DataForm";
@@ -14,14 +14,29 @@ interface ReportData {
 }
 
 const Dashboard = () => {
-	const [value, onChange] = useState<Date | null>(null);
+	const [value, setValue] = useState<Date | null>(null);
 	const [showForm, setShowForm] = useState(false);
 	const [reportData, setReportData] = useState<ReportData[]>([]);
 
-	const handleDateChange = (date: Date | null) => {
-		// Update your state or perform any other necessary actions
-		console.log(date);
-		onChange(date);
+	useEffect(() => {
+		const storedData = localStorage.getItem("plannerData");
+		if (storedData) {
+			const parsedData: ReportData[] = JSON.parse(storedData).map(
+				(report: ReportData) => ({
+					...report,
+					date: new Date(report.date),
+				})
+			);
+			setReportData(parsedData);
+		}
+	}, []);
+
+	const handleDateChange = (value: Date | Date[] | null) => {
+		if (Array.isArray(value)) {
+			setValue(value[0]);
+		} else {
+			setValue(value);
+		}
 		setShowForm(true);
 	};
 
@@ -41,9 +56,9 @@ const Dashboard = () => {
 		};
 		const updatedReportData = [...reportData, newReport];
 		setReportData(updatedReportData);
-		localStorage.setItem("plannerData", JSON.stringify(reportData));
+		localStorage.setItem("plannerData", JSON.stringify(updatedReportData));
 		setShowForm(false);
-		onChange(null);
+		setValue(null);
 	};
 
 	const tileContent = ({ date }: { date: Date }) => {
@@ -69,7 +84,7 @@ const Dashboard = () => {
 	return (
 		<div>
 			<Calendar
-				onChange={handleDateChange}
+				onChange={(value) => handleDateChange(value as Date | Date[] | null)}
 				value={value}
 				className="custom-calendar"
 				tileContent={tileContent}

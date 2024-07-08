@@ -30,9 +30,9 @@
     text-decoration: none;
   }
   
-  /* .react-calendar__month-view__days__day--weekend {
+.react-calendar__month-view__days__day--weekend {
     color: #d10000;
-  } */
+  } 
   
   .react-calendar__tile:enabled:hover,
   .react-calendar__tile:enabled:focus {
