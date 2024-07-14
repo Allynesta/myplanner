@@ -99,18 +99,13 @@ const Dashboard = () => {
 	};
 
 	return (
-		<div className="dashboard">
-			<Calendar
-				onChange={(value) => handleDateChange(value as Date | Date[] | null)}
-				value={value}
-				className="custom-calendar"
-				tileContent={tileContent}
-			/>
+		<>
 			{showForm && !selectedReport && (
 				<Modal
 					ariaHideApp={false}
 					isOpen={showForm}
 					onRequestClose={() => setShowForm(false)}
+					overlayClassName="custom-overlay"
 				>
 					<DataForm onSubmit={handleSubmit} selectedDate={value as Date} />
 				</Modal>
@@ -120,6 +115,7 @@ const Dashboard = () => {
 					ariaHideApp={false}
 					isOpen={!!selectedReport}
 					onRequestClose={() => setSelectedReport(null)}
+					overlayClassName="custom-overlay"
 				>
 					<div className="card">
 						<div>
@@ -137,7 +133,15 @@ const Dashboard = () => {
 					</div>
 				</Modal>
 			)}
-		</div>
+			<div className="dashboard">
+				<Calendar
+					onChange={(value) => handleDateChange(value as Date | Date[] | null)}
+					value={value}
+					className="custom-calendar"
+					tileContent={tileContent}
+				/>
+			</div>
+		</>
 	);
 };
 

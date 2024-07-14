@@ -106,3 +106,23 @@
   height: fit-content;
   width: fit-content;
 }
+
+
+
+/* Add mobile-specific styles */
+@media only screen and (max-width: 768px) {
+  .card {
+    flex-direction: column; /* Stack elements vertically */
+    padding: 15px; /* Increase padding for better readability */
+    margin: 15px; /* Increase margin for better spacing */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Softer box shadow */
+  }
+
+  .card > div {
+    margin-bottom: 15px; /* Increase margin between elements */
+  }
+
+  .card > div > span {
+    font-size: 16px; /* Increase font size for better readability */
+  }
+}
