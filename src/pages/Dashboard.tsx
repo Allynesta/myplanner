@@ -15,16 +15,18 @@ interface ReportData {
 }
 
 const Dashboard = () => {
-	const [value, setValue] = useState<Date | null>(null);
-	const [showForm, setShowForm] = useState(false);
-	const [reportData, setReportData] = useState<ReportData[]>([]);
-	const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
+	// State variables
+	const [value, setValue] = useState<Date | null>(null); // selected date
+	const [showForm, setShowForm] = useState(false); // show data form modal
+	const [reportData, setReportData] = useState<ReportData[]>([]); // report data
+	const [selectedReport, setSelectedReport] = useState<ReportData | null>(null); // selected report
 
 	useEffect(() => {
+		// Load report data from local storage
 		const storedData = localStorage.getItem("plannerData");
 		if (storedData) {
 			const parsedData: ReportData[] = JSON.parse(storedData).map(
-				(report: ReportData) => ({
+				(report: { date: string | number | Date }) => ({
 					...report,
 					date: new Date(report.date),
 				})
@@ -40,10 +42,9 @@ const Dashboard = () => {
 		} else {
 			setValue(value);
 		}
-		if (!selectedReport) {
-			setShowForm(true);
-		} else {
-			setSelectedReport(null); // Reset selected report when date changes
+		if (value instanceof Date) {
+			setShowForm(true); // open DataForm when date is selected
+			setSelectedReport(null); // reset selected report when date changes
 		}
 	};
 
@@ -55,7 +56,7 @@ const Dashboard = () => {
 		price: number;
 	}) => {
 		const newReport: ReportData = {
-			id: Date.now(), // Generate a new ID
+			id: Date.now(), // generate a new ID
 			location: data.location,
 			description: data.description,
 			date: value as Date,
@@ -65,23 +66,29 @@ const Dashboard = () => {
 		const updatedReportData = [...reportData, newReport];
 		setReportData(updatedReportData);
 		localStorage.setItem("plannerData", JSON.stringify(updatedReportData));
-		setShowForm(false); // Close DataForm after submission
+		setShowForm(false); // close DataForm after submission
 		setValue(null);
 	};
 
+	// Tile content for calendar
 	const tileContent = ({ date }: { date: Date }) => {
-		const reports = reportData.filter(
-			(report) => report.date.toLocaleDateString() === date.toLocaleDateString()
-		);
+		const reports = reportData.filter((report) => {
+			if (report.date instanceof Date) {
+				return report.date.toLocaleDateString() === date.toLocaleDateString();
+			} else {
+				return false;
+			}
+		});
 		return (
 			<div>
 				{reports.map((report) => (
 					<div
 						key={report.id}
 						className="card"
-						onClick={() => {
-							setSelectedReport(report); // Open report details when card is clicked
-							setShowForm(false); // Close DataForm if it's open
+						onClick={(e) => {
+							e.stopPropagation(); // stop event propagation
+							setShowForm(false); // close DataForm if it's open
+							setSelectedReport(report); // open report details when card is clicked
 						}}
 					>
 						<span>{report.location}</span>
@@ -99,7 +106,7 @@ const Dashboard = () => {
 				className="custom-calendar"
 				tileContent={tileContent}
 			/>
-			{showForm && (
+			{showForm && !selectedReport && (
 				<Modal
 					ariaHideApp={false}
 					isOpen={showForm}

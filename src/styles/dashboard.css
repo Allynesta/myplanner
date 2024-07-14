@@ -20,6 +20,7 @@
   border-radius: 10px;
   background-color: #fff;
   padding: 20px;
+  max-width: 100%;
 }
 
 .react-calendar__month-view__weekdays {
@@ -103,4 +104,5 @@
 
 .ReactModal__Content.ReactModal__Content--after-open {
   height: fit-content;
+  width: fit-content;
 }
