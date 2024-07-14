@@ -5,6 +5,7 @@ import ReportPage from "./pages/ReportPage";
 import "./styles/nav.css";
 import "./styles/mobile.css";
 import Dashboard from "./pages/Dashboard";
+import ReportCard from "./pages/ReportCard";
 
 const App: React.FC = () => {
 	// Implement the delete handler function
@@ -21,20 +22,25 @@ const App: React.FC = () => {
 						<Link to="/">Home</Link>
 					</li>
 					<li>
-						<Link to="/Report-Table">Report Table</Link>
+						<Link to="/Dashboard">Dashboard</Link>
 					</li>
 					<li>
-						<Link to="/Dashboard">Dashboard</Link>
+						<Link to="/Report-Table">Report Table</Link>
+					</li>
+
+					<li>
+						<Link to="/Report-Card">Report Card</Link>
 					</li>
 				</ul>
 			</nav>
 			<Routes>
 				<Route path="/" element={<PlannerPage />} />
+				<Route path="/Dashboard" element={<Dashboard />} />
 				<Route
 					path="/Report-Table"
 					element={<ReportPage onDelete={handleDelete} />}
 				/>
-				<Route path="/Dashboard" element={<Dashboard />} />
+				<Route path="/Report-Card" element={<ReportCard />} />
 			</Routes>
 		</Router>
 	);
