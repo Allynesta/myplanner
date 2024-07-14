@@ -32,6 +32,7 @@ const ReportCard: React.FC<Props> = ({ onDelete }) => {
 		const updatedReportData = reportData.filter((data) => data.id !== id);
 		setReportData(updatedReportData);
 		localStorage.setItem("plannerData", JSON.stringify(updatedReportData));
+		onDelete(id);
 	};
 
 	return (

@@ -30,6 +30,7 @@ const ReportPage: React.FC<Props> = ({ onDelete }) => {
 	const handleDelete = (id: number) => {
 		const updatedData = data.filter((data) => data.id !== id);
 		setData(updatedData);
+		localStorage.setItem("plannerData", JSON.stringify(updatedData));
 		onDelete(id);
 	};
 

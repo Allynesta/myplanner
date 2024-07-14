@@ -40,7 +40,10 @@ const App: React.FC = () => {
 					path="/Report-Table"
 					element={<ReportPage onDelete={handleDelete} />}
 				/>
-				<Route path="/Report-Card" element={<ReportCard />} />
+				<Route
+					path="/Report-Card"
+					element={<ReportCard onDelete={handleDelete} />}
+				/>
 			</Routes>
 		</Router>
 	);
