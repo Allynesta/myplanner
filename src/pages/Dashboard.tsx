@@ -5,6 +5,7 @@ import DataForm from "../components/DataForm";
 import Modal from "react-modal";
 import "../styles/dashboard.css";
 
+// Interface for report data
 interface ReportData {
 	id: number;
 	location: string;
@@ -15,17 +16,19 @@ interface ReportData {
 }
 
 const Dashboard = () => {
+	// State for selected date, show form, report data, selected report, and reports for date
 	const [value, setValue] = useState<Date | null>(null);
 	const [showForm, setShowForm] = useState(false);
 	const [reportData, setReportData] = useState<ReportData[]>([]);
 	const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
 	const [reportsForDate, setReportsForDate] = useState<ReportData[]>([]);
 
+	// Load report data from local storage on mount
 	useEffect(() => {
 		const storedData = localStorage.getItem("plannerData");
 		if (storedData) {
 			const parsedData: ReportData[] = JSON.parse(storedData).map(
-				(report: ReportData) => ({
+				(report: { date: string | number | Date }) => ({
 					...report,
 					date: new Date(report.date),
 				})
@@ -34,21 +37,23 @@ const Dashboard = () => {
 		}
 	}, []);
 
-	// Handle date change, open DataForm
+	// Handle date change, open DataForm if no report is selected
 	const handleDateChange = (value: Date | Date[] | null) => {
+		// If the selected date is an array (e.g., a range of dates), use the first date
 		if (Array.isArray(value)) {
 			setValue(value[0]);
 		} else {
+			// Otherwise, use the single selected date
 			setValue(value);
 		}
 		if (!selectedReport) {
 			setShowForm(true);
 		} else {
-			setSelectedReport(null); // Reset selected report when date changes
+			setSelectedReport(null);
 		}
 	};
 
-	// Handle form submission, close DataForm
+	// Handle form submission, close DataForm and add new report to report data
 	const handleSubmit = (data: {
 		location: string;
 		description: string;
@@ -56,74 +61,64 @@ const Dashboard = () => {
 		price: number;
 	}) => {
 		const newReport: ReportData = {
-			id: Date.now(), // Generate a new ID
-			location: data.location,
-			description: data.description,
+			...data,
 			date: value as Date,
-			pax: data.pax,
-			price: data.price,
+			id: Date.now(),
 		};
-		const updatedReportData = [...reportData, newReport];
-		setReportData(updatedReportData);
-		localStorage.setItem("plannerData", JSON.stringify(updatedReportData));
-		setShowForm(false); // Close DataForm after submission
+		setReportData([...reportData, newReport]);
+		localStorage.setItem(
+			"plannerData",
+			JSON.stringify([...reportData, newReport])
+		);
+		setShowForm(false);
 		setValue(null);
 	};
 
-	// Tile content for the calendar
-	const tileContent = ({ date, view }: { date: Date; view: string }) => {
-		if (view === "month") {
-			const reports = reportData.filter((report) => {
-				if (report.date instanceof Date) {
-					return report.date.toLocaleDateString() === date.toLocaleDateString(); // Check if the report date matches the tile date
-				} else {
-					return false;
-				}
-			});
-			return reports.length > 0 ? ( // If there are reports for this date, display an indicator
-				<div className="indicator">
-					<div className="indicator-box"></div>
-				</div>
-			) : null; // Return null if no reports for this date
-		}
-		return null; // Return null if view is not month
-	};
-
-	// Handle click on date with reports
+	// Handle click on date with reports, show reports for date
 	const handleDateClick = (date: Date) => {
 		const reports = reportData.filter(
 			(report) => report.date.toLocaleDateString() === date.toLocaleDateString()
 		);
 		if (reports.length > 0) {
 			setReportsForDate(reports);
+			setShowForm(false);
 		} else {
 			setReportsForDate([]);
 		}
-		setShowForm(false); // Close DataForm if it's open
 		setSelectedReport(null);
+	};
+
+	// Tile content for calendar, show indicator if reports exist for date
+	const tileContent = ({ date, view }: { date: Date; view: string }) => {
+		if (view === "month") {
+			const reports = reportData.filter(
+				(report) =>
+					report.date.toLocaleDateString() === date.toLocaleDateString()
+			);
+			return reports.length > 0 ? (
+				<div className="indicator" onClick={() => handleDateClick(date)}>
+					<div className="indicator-box"></div>
+				</div>
+			) : null;
+		}
+		return null;
 	};
 
 	return (
 		<div className="dashboard">
 			<Calendar
-				onClickDay={handleDateClick}
 				onChange={(value) => handleDateChange(value as Date | Date[] | null)} // Handle date change
-				value={value} // Selected date
+				value={value}
 				className="custom-calendar"
-				tileContent={tileContent} // Content for each tile
+				tileContent={tileContent}
 			/>
 			{showForm && (
-				<Modal
-					ariaHideApp={false}
-					isOpen={showForm}
-					onRequestClose={() => setShowForm(false)}
-				>
+				<Modal isOpen={showForm} onRequestClose={() => setShowForm(false)}>
 					<DataForm onSubmit={handleSubmit} selectedDate={value as Date} />
 				</Modal>
 			)}
 			{reportsForDate.length > 0 && (
 				<Modal
-					ariaHideApp={false}
 					isOpen={reportsForDate.length > 0}
 					onRequestClose={() => setReportsForDate([])}
 				>
@@ -131,7 +126,7 @@ const Dashboard = () => {
 						<h2>Reports for {value?.toLocaleDateString()}</h2>
 						{reportsForDate.map((report) => (
 							<div
-								key={report.id} // Unique key for each report
+								key={report.id}
 								className="report-summary"
 								onClick={() => setSelectedReport(report)}
 							>
@@ -143,7 +138,6 @@ const Dashboard = () => {
 			)}
 			{selectedReport && (
 				<Modal
-					ariaHideApp={false}
 					isOpen={!!selectedReport}
 					onRequestClose={() => setSelectedReport(null)}
 				>
