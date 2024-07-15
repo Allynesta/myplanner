@@ -88,7 +88,6 @@ const Dashboard = () => {
 		setSelectedReport(null);
 	};
 
-	// Tile content for calendar, show indicator if reports exist for date
 	const tileContent = ({ date, view }: { date: Date; view: string }) => {
 		if (view === "month") {
 			const reports = reportData.filter(
@@ -96,10 +95,21 @@ const Dashboard = () => {
 					report.date.toLocaleDateString() === date.toLocaleDateString()
 			);
 			return reports.length > 0 ? (
-				<div className="indicator" onClick={() => handleDateClick(date)}>
+				<div
+					className="indicator"
+					onClick={(e) => {
+						e.stopPropagation(); // prevent click event from bubbling up
+						handleDateClick(date);
+					}}
+				>
 					<div className="indicator-box"></div>
 				</div>
-			) : null;
+			) : (
+				<div
+					className="empty-indicator"
+					onClick={() => setShowForm(true)}
+				></div>
+			);
 		}
 		return null;
 	};
