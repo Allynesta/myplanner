@@ -23,7 +23,7 @@ const Report: React.FC<Props> = ({ reportData, onDelete }) => {
 	return (
 		<div>
 			<h2>Report</h2>
-			<ul>
+			<ul className="report-list">
 				{/* Iterate over reportData and render a ReportItem for each item */}
 				{reportData.map((data) => (
 					<ReportItem key={data.id} onDelete={onDelete} data={data} />

@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import PlannerPage from "./pages/PlannerPage";
 import ReportPage from "./pages/ReportPage";
 import "./styles/nav.css";
@@ -7,6 +7,7 @@ import "./styles/mobile.css";
 import Dashboard from "./pages/Dashboard";
 import ReportCard from "./pages/ReportCard";
 import Home from "./pages/Home";
+import Nav from "./components/Nav";
 
 const App: React.FC = () => {
 	// Implement the delete handler function
@@ -17,26 +18,7 @@ const App: React.FC = () => {
 
 	return (
 		<Router>
-			<nav>
-				<ul className="navList">
-					<li>
-						<Link to="/">Home</Link>
-					</li>
-					<li>
-						<Link to="/Dashboard">Dashboard</Link>
-					</li>
-					<li>
-						<Link to="/PlannerPage">My Calendar</Link>
-					</li>
-					<li>
-						<Link to="/Report-Table">Report Table</Link>
-					</li>
-
-					<li>
-						<Link to="/Report-Card">Report Card</Link>
-					</li>
-				</ul>
-			</nav>
+			<Nav />
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route path="/PlannerPage" element={<PlannerPage />} />
