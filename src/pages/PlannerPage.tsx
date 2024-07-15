@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Calender from "../components/MyCalender";
 import DataForm from "../components/DataForm";
-import Report from "../components/Report";
 // Define the structure of the data each report will have
 interface ReportData {
 	id: number;
@@ -61,13 +60,6 @@ const PlannerPage = () => {
 		setFormError(null); // Clear error if date is selected
 	};
 
-	// Handle item deletion
-	const handleDeleteItem = (id: number) => {
-		const updatedReportData = reportData.filter((data) => data.id !== id);
-		setReportData(updatedReportData);
-		localStorage.setItem("plannerData", JSON.stringify(updatedReportData));
-	};
-
 	useEffect(() => {
 		// Load stored data from localStorage
 		const storedData = localStorage.getItem("plannerData");
@@ -83,17 +75,6 @@ const PlannerPage = () => {
 			{/* Pass selectedDate to DataForm */}
 			{formError && <div className="error-message">{formError}</div>}{" "}
 			{/* Display error message if present */}
-			<Report
-				onDelete={handleDeleteItem}
-				reportData={reportData.map((data) => ({
-					id: data.id,
-					description: data.description,
-					date: new Date(data.date),
-					location: data.location,
-					pax: data.pax,
-					price: data.price,
-				}))}
-			/>
 		</div>
 	);
 };
