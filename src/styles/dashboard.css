@@ -77,6 +77,27 @@
   color: #333;
 }
 
+/* Style for the indicator container */
+.indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  position: relative;
+}
+
+/* Style for the indicator box */
+.indicator-box {
+  width: 50px;
+    height: 15px;
+  background-color: black; /* Primary color */
+  border-radius: 50%; /* Circular indicator */
+  position: absolute;
+  bottom: 5px;
+  overflow: hidden; /* Add this to prevent text from going outside */
+  text-overflow: ellipsis; /* Add this to truncate text with ellipsis */
+  white-space: nowrap; /* Add this to prevent text from wrapping */
+}
 
 .card {
   background-color: #fff;
@@ -119,6 +140,9 @@
   max-width: 500px; /* Maximum width */
   margin: auto; /* Centered horizontally */
 }
+
+
+
 
 
 
