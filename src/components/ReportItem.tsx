@@ -7,6 +7,7 @@ interface ReportData {
 	description: string;
 	pax: number;
 	price: number;
+	total: number;
 }
 
 interface Props {
@@ -23,19 +24,23 @@ const ReportItem: React.FC<Props> = ({ data, onDelete }) => {
 
 	return (
 		<li>
-			<strong>location:</strong> {data.location}
+			<strong>Location:</strong> {data.location}
 			<br />
 			<br />
-			<strong>pax:</strong> {data.pax}
+			<strong>Pax:</strong> {data.pax}
 			<br />
 			<br />
-			<strong>price:</strong> {data.price}
+			<strong>Price:</strong> {data.price}
 			<br />
 			<br />
 			<strong>Description:</strong> {data.description}
 			<br />
 			<br />
-			<strong>Date:</strong> <p>{data.date.toDateString()}</p>
+			<strong>Date:</strong>
+			{data.date.toDateString()}
+			<br />
+			<br />
+			<strong>Total:</strong> {(data.total = data.price * data.pax)}
 			<br />
 			<br />
 			<button onClick={handleDelete}>Delete</button>

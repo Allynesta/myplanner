@@ -9,6 +9,7 @@ interface ReportData {
 	date: Date;
 	pax: number;
 	price: number;
+	total: number;
 }
 
 interface Props {
@@ -82,6 +83,7 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 						<th style={{ width: "20%" }}>Date</th>
 						<th style={{ width: "20%" }}>Pax</th>
 						<th style={{ width: "20%" }}>Price</th>
+						<th style={{ width: "20%" }}>Total</th>
 						<th style={{ width: "20%" }}></th>
 					</tr>
 				</thead>
@@ -92,6 +94,7 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 							<td>{new Date(data.date).toLocaleDateString()}</td>
 							<td>{data.pax}</td>
 							<td>{data.price}</td>
+							<td>{(data.total = data.pax * data.price)}</td>
 							<td>
 								<button onClick={() => handleDeleteItem(data.id)}>x</button>
 							</td>

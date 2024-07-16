@@ -13,6 +13,7 @@ interface ReportData {
 	date: Date;
 	pax: number;
 	price: number;
+	total: number;
 }
 
 const Dashboard = () => {
@@ -64,6 +65,7 @@ const Dashboard = () => {
 			...data,
 			date: value as Date,
 			id: Date.now(),
+			total: 0,
 		};
 		setReportData([...reportData, newReport]);
 		localStorage.setItem(
@@ -151,6 +153,7 @@ const Dashboard = () => {
 					isOpen={!!selectedReport}
 					onRequestClose={() => setSelectedReport(null)}
 				>
+					<h2>Details - {selectedReport.location}</h2>
 					<div className="card">
 						<div>
 							<span>Location:</span> {selectedReport.location}
@@ -163,6 +166,13 @@ const Dashboard = () => {
 						</div>
 						<div>
 							<span>Price:</span> {selectedReport.price}
+						</div>
+						<div>
+							<span>Price:</span>{" "}
+							{
+								(selectedReport.total =
+									selectedReport.price * selectedReport.pax)
+							}
 						</div>
 					</div>
 				</Modal>
