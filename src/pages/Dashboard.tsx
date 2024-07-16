@@ -81,9 +81,11 @@ const Dashboard = () => {
 		const reports = reportData.filter(
 			(report) => report.date.toLocaleDateString() === date.toLocaleDateString()
 		);
+
 		if (reports.length > 0) {
 			setReportsForDate(reports);
 			setShowForm(false);
+			setValue(date);
 		} else {
 			setReportsForDate([]);
 		}
@@ -135,7 +137,9 @@ const Dashboard = () => {
 					onRequestClose={() => setReportsForDate([])}
 				>
 					<div>
-						<h2>Reports for {value?.toLocaleDateString()}</h2>
+						<h2>
+							Reports for {value?.toLocaleDateString() ?? "date selected"}
+						</h2>
 						{reportsForDate.map((report) => (
 							<div
 								key={report.id}
