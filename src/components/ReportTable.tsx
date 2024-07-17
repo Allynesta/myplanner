@@ -59,6 +59,7 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 
 	return (
 		<div>
+			<h2>Report Table</h2>
 			<input
 				id="myInput"
 				onKeyUp={filterByLocation}
@@ -79,12 +80,12 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 			<table id="myTable">
 				<thead>
 					<tr className="header">
-						<th style={{ width: "20%" }}>Location</th>
-						<th style={{ width: "20%" }}>Date</th>
-						<th style={{ width: "20%" }}>Pax</th>
+						<th style={{ width: "25%" }}>Location</th>
+						<th style={{ width: "25%" }}>Date</th>
+						<th style={{ width: "15%" }}>Pax</th>
 						<th style={{ width: "20%" }}>Price</th>
 						<th style={{ width: "20%" }}>Total</th>
-						<th style={{ width: "20%" }}></th>
+						<th style={{ width: "15%" }}></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -95,8 +96,9 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 							<td>{data.pax}</td>
 							<td>{data.price}</td>
 							<td>{(data.total = data.pax * data.price)}</td>
-							<td>
-								<button onClick={() => handleDeleteItem(data.id)}>x</button>
+							<td onClick={() => handleDeleteItem(data.id)}>
+								{" "}
+								<span className="deletecss">x</span>
 							</td>
 						</tr>
 					))}
