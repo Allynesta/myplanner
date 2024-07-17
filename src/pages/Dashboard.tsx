@@ -120,6 +120,7 @@ const Dashboard = () => {
 
 	return (
 		<div className="dashboard">
+			<h2>Dashboard</h2>
 			<Calendar
 				onChange={(value) => handleDateChange(value as Date | Date[] | null)} // Handle date change
 				value={value}
@@ -146,7 +147,10 @@ const Dashboard = () => {
 								className="report-summary"
 								onClick={() => setSelectedReport(report)}
 							>
-								<span>{report.location}</span>
+								<span>
+									<p className="report-item">- {report.location}</p>
+									<br />
+								</span>
 							</div>
 						))}
 					</div>

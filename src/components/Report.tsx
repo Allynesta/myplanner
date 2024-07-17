@@ -23,7 +23,7 @@ interface Props {
 const Report: React.FC<Props> = ({ reportData, onDelete }) => {
 	return (
 		<div>
-			<h2>Report</h2>
+			<h2>Report Card</h2>
 			<ul className="report-list">
 				{/* Iterate over reportData and render a ReportItem for each item */}
 				{reportData.map((data) => (
