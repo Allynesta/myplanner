@@ -1,0 +1,41 @@
+
+ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    background-color: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: var(--form-shadow);
+  }
+  
+  li strong {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  button {
+    background-color: var(--button-bg-color);
+    color: var(--nav-text-color);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: var(--button-hover-bg-color);
+  }
+  
+  @media (max-width: 768px) {
+    li {
+      padding: 10px;
+    }
+  
+    button {
+      padding: 5px 8px;
+    }
+  }
