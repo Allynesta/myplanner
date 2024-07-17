@@ -1,0 +1,57 @@
+/* --- calendar width --- */
+.react-calendar {
+    width: auto;
+    max-width: 100%;
+}
+
+
+
+/* ~~~ navigation styles ~~~ */
+.react-calendar__navigation {
+    display: flex;
+
+    .react-calendar__navigation__label {
+      font-weight: bold;
+    }
+
+    .react-calendar__navigation__arrow {
+      flex-grow: 0.333;
+    }
+  }
+
+  /* ~~~ label styles ~~~ */
+  .react-calendar__month-view__weekdays {
+    text-align: center;
+  }
+
+  /* ~~~ button styles ~~~ */
+  button {
+    margin: 3px;
+    background-color: #6f876f;
+    border: 0;
+    border-radius: 3px;
+    color: rgb(0, 0, 0);
+    padding: 5px 0;
+
+    &:hover {
+      background-color: #556b55;
+    }
+
+    &:active {
+      background-color: #a5c1a5;
+    }
+  }
+
+
+  /* ~~~ neighboring month & weekend styles ~~~ */
+  .react-calendar__month-view__days__day--neighboringMonth {
+    opacity: 0.7;
+  }
+  .react-calendar__month-view__days__day--weekend {
+    color: #a52020;
+  }
+
+  /* ~~~ active day styles ~~~ */
+  .react-calendar__tile--range {
+    box-shadow: 0 0 6px 2px black;
+}
