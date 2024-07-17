@@ -13,15 +13,7 @@ form {
     font-weight: bold;
   }
   
-  select,
-  textarea,
-  input[type="number"] {
-    width: 100%;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid var(--form-border-color);
-    margin-bottom: 15px;
-  }
+ 
   
   button.btn-submit {
     border-radius: 8px;
@@ -56,3 +48,33 @@ form {
   
   
   
+
+
+  .react-datepicker-wrapper,
+.react-datepicker__input-container input {
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid var(--form-border-color);
+}
+
+.react-datepicker {
+  font-size: 16px;
+}
+
+.react-datepicker__header {
+  background-color: var(--button-bg-color);
+  color: white;
+}
+
+.react-datepicker__day--selected {
+  background-color: var(--button-bg-color);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .react-datepicker__input-container input {
+    font-size: 14px;
+    padding: 8px;
+  }
+}

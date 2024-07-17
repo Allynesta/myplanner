@@ -1,6 +1,6 @@
 /* --- calendar width --- */
 .react-calendar {
-    width: auto;
+    width: 100%;
     max-width: 100%;
 }
 
@@ -26,6 +26,17 @@
   color: #fff;
   font-weight: bold;
   padding: 10px;
+  }
+
+  .react-calendar__month-view__weekdays > div {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: #000;
+    color: #fff;
   }
 
   /* ~~~ button styles ~~~ */
@@ -62,8 +73,11 @@
 
 
 
+
+
+
 .indicator {
-    background-color: #fff;
+    background-color: #22a822;
     padding: 4px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -85,5 +99,13 @@
     margin-right: 10px;
   }
 
+
+  .ReactModal__Content.ReactModal__Content--after-open {
+    HEIGHT: 60VH;
+}
+
   
   
+
+
+
