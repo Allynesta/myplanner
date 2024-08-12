@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import "../styles/reporttable.css";
+import { fetchReports, deleteReport } from "../services/authService"; // Import the deleteReport function
 
 // Define the structure of the data each report will have
 interface ReportData {
-	id: number;
+	reportId: number;
 	location: string;
 	description: string;
 	date: Date;
@@ -14,12 +15,27 @@ interface ReportData {
 
 interface Props {
 	reportData: ReportData[];
-	onDelete: (id: number) => void;
+	onDelete: (reportId: number) => void;
 }
 
 const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
-	const [showData, setShowData] = useState<ReportData[]>(reportData);
+	const [, setReportData] = useState<ReportData[]>([]);
+	const [showData, setShowData] = useState<ReportData[]>([]);
 	const [filter, setFilter] = useState<string>("All");
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const data = await fetchReports();
+				setReportData(data);
+				setShowData(data); // Set initial data
+			} catch (error) {
+				console.error("Error fetching reports:", error);
+			}
+		};
+
+		fetchData();
+	}, []);
 
 	useEffect(() => {
 		// Filter the data based on the selected filter value
@@ -38,12 +54,20 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 		setFilter(event.target.value);
 	};
 
-	const handleDeleteItem = (id: number) => {
+	const handleDeleteItem = async (reportId: number) => {
 		if (window.confirm("Are you sure you want to delete this item?")) {
-			const updatedReportData = showData.filter((data) => data.id !== id);
-			setShowData(updatedReportData);
-			localStorage.setItem("plannerData", JSON.stringify(updatedReportData));
-			onDelete(id);
+			try {
+				console.log(`Attempting to delete report with ID: ${reportId}`); // Log the id being deleted
+				await deleteReport(reportId); // Call the delete function
+				const updatedReportData = showData.filter(
+					(data) => data.reportId !== reportId
+				);
+				setShowData(updatedReportData);
+				setReportData(updatedReportData); // Update the full dataset
+				onDelete(reportId); // Notify parent component of the deletion
+			} catch (error) {
+				console.error("Error deleting report:", error);
+			}
 		}
 	};
 
@@ -89,15 +113,14 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 					</tr>
 				</thead>
 				<tbody>
-					{showData.map((data) => (
-						<tr key={data.id}>
-							<td>{data.location}</td>
-							<td>{new Date(data.date).toLocaleDateString()}</td>
-							<td>{data.pax}</td>
-							<td>{data.price}</td>
-							<td>{(data.total = data.pax * data.price)}</td>
-							<td onClick={() => handleDeleteItem(data.id)}>
-								{" "}
+					{showData.map((report) => (
+						<tr key={report.reportId}>
+							<td>{report.location}</td>
+							<td>{new Date(report.date).toLocaleDateString()}</td>
+							<td>{report.pax}</td>
+							<td>{report.price}</td>
+							<td>{report.total}</td>
+							<td onClick={() => handleDeleteItem(report.reportId)}>
 								<span className="deletecss">x</span>
 							</td>
 						</tr>

@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 const Nav = () => {
 	const [responsive, setResponsive] = useState(false);
+	const { isAuthenticated, logout } = useAuth();
+	const navigate = useNavigate();
 
 	const toggleResponsive = () => {
 		setResponsive(!responsive);
@@ -15,27 +18,47 @@ const Nav = () => {
 		}
 	};
 
+	const handleLogout = () => {
+		logout();
+		window.location.reload();
+		navigate("/login");
+	};
+
 	return (
 		<header>
-			{" "}
 			<nav className={`topnav ${responsive ? "responsive" : ""}`} id="myTopnav">
 				<Link to="/" onClick={handleNavLinkClick}>
 					Home
 				</Link>
-				<Link to="/Dashboard" onClick={handleNavLinkClick}>
-					Dashboard
-				</Link>
-				<Link to="/PlannerPage" onClick={handleNavLinkClick}>
-					My Calendar
-				</Link>
-				<Link to="/Report-Table" onClick={handleNavLinkClick}>
-					Report Table
-				</Link>
-				<Link to="/Report-Card" onClick={handleNavLinkClick}>
-					Report Card
-				</Link>
+				{isAuthenticated && (
+					<>
+						<Link to="/Dashboard" onClick={handleNavLinkClick}>
+							Dashboard
+						</Link>
+
+						<Link to="/Report-Table" onClick={handleNavLinkClick}>
+							Report Table
+						</Link>
+						<Link to="/Report-Card" onClick={handleNavLinkClick}>
+							Report Card
+						</Link>
+						<Link to="#" onClick={handleLogout}>
+							Logout
+						</Link>
+					</>
+				)}
+				{!isAuthenticated && (
+					<>
+						<Link to="/register" onClick={handleNavLinkClick}>
+							Register
+						</Link>
+						<Link to="/login" onClick={handleNavLinkClick}>
+							Login
+						</Link>
+					</>
+				)}
 				<Link to="#" className="icon" onClick={toggleResponsive}>
-					<i className="fa fa-bars"></i>x
+					<i className="fa fa-bars"></i>
 				</Link>
 			</nav>
 		</header>

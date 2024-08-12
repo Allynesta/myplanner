@@ -1,0 +1,42 @@
+
+
+.card-column {
+    float: left;
+    width: 33.3%;
+    margin-bottom: 16px;
+    padding: 0 8px;
+
+  }
+  
+  .card {
+    margin: 8px;
+  }
+
+  .report-list>li{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+  
+
+  .card-info {
+    padding: 0 16px;
+    
+  }
+  
+  .card-info::after, .card-row::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+  
+  
+
+  
+  @media screen and (max-width: 600px) {
+    .card-column {
+        width: 100%;
+      display: block;
+    }
+  }
+
+
+  

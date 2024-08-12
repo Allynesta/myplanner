@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import ReportTable from "../components/ReportTable";
+import { fetchReports } from "../services/authService";
 
 // Define the structure of the data each report will have
 interface ReportData {
-	id: number;
+	reportId: number;
 	location: string;
 	description: string;
 	date: Date;
@@ -13,31 +14,48 @@ interface ReportData {
 }
 
 interface Props {
-	reportData?: ReportData[]; // Make reportData optional
-	onDelete: (id: number) => void;
+	reportData: ReportData[]; // Make reportData optional
+	onDelete: (reportId: number) => void;
 }
 
 const ReportPage: React.FC<Props> = ({ onDelete }) => {
-	const [data, setData] = useState<ReportData[]>([]);
+	const [reportData, setReportData] = useState<ReportData[]>([]);
 
 	useEffect(() => {
-		// Retrieve data from localStorage
-		const storedData = localStorage.getItem("plannerData");
-		if (storedData) {
-			setData(JSON.parse(storedData)); // Use data from localStorage if available
-		}
+		const fetchData = async () => {
+			try {
+				const data = await fetchReports();
+				setReportData(data);
+			} catch (error) {
+				console.error("Error fetching reports:", error);
+			}
+		};
+
+		fetchData();
 	}, []);
 
-	const handleDelete = (id: number) => {
-		const updatedData = data.filter((data) => data.id !== id);
-		setData(updatedData);
-		localStorage.setItem("plannerData", JSON.stringify(updatedData));
+	// Handle item deletion
+	const handleDeleteItem = (id: number) => {
+		const updatedReportData = reportData.filter((data) => data.reportId !== id);
+		setReportData(updatedReportData);
+		// Optionally, you can also update the backend here if needed
 		onDelete(id);
 	};
 
 	return (
 		<div>
-			<ReportTable reportData={data} onDelete={handleDelete} />
+			<ReportTable
+				reportData={reportData.map((data) => ({
+					reportId: data.reportId,
+					description: data.description,
+					date: new Date(data.date),
+					location: data.location,
+					pax: data.pax,
+					price: data.price,
+					total: data.total,
+				}))}
+				onDelete={handleDeleteItem}
+			/>
 		</div>
 	);
 };

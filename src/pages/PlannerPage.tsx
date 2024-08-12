@@ -3,7 +3,7 @@ import Calender from "../components/MyCalender";
 import DataForm from "../components/DataForm";
 // Define the structure of the data each report will have
 interface ReportData {
-	id: number;
+	reportId: number;
 	location: string;
 	description: string;
 	date: Date;
@@ -39,7 +39,7 @@ const PlannerPage = () => {
 		}
 
 		const newReport: ReportData = {
-			id: reportData.length + 1, // Generate a new ID
+			reportId: reportData.length + 1, // Generate a new ID
 			location: data.location,
 			description: data.description,
 			date: selectedDate,
