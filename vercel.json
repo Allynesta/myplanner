@@ -1,9 +1,31 @@
 {
-    "rewrites": [
+    "version": 2,
+    "builds": [
       {
-        "source": "/api/(.*)",
-        "destination": "/backend/$1"
+        "src": "backend/server.js",
+        "use": "@vercel/node"
+      },
+      {
+        "src": "src/**/*.tsx",
+        "use": "@vercel/static-build",
+        "config": {
+          "distDir": "dist"
+        }
       }
-    ]
+    ],
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "backend/server.js"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
+    ],
+    "env": {
+      "MONGO_URI": "@mongo_uri",
+      "JWT_SECRET": "@jwt_secret"
+    }
   }
   

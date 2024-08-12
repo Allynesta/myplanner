@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-app.post('/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
@@ -38,7 +38,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
     if (!user) {
@@ -83,7 +83,7 @@ const reportSchema = new mongoose.Schema({
 const Report = mongoose.model('Report', reportSchema);
 
 // Protected routes
-app.post('/dashboard', authenticateToken, async (req, res) => {
+app.post('/api/dashboard', authenticateToken, async (req, res) => {
     try {
         const reportData = req.body;
         const newReport = new Report({
@@ -98,7 +98,7 @@ app.post('/dashboard', authenticateToken, async (req, res) => {
     }
 });
 
-app.get('/dashboard', authenticateToken, async (req, res) => {
+app.get('/api/dashboard', authenticateToken, async (req, res) => {
     try {
         const reports = await Report.find({ userId: req.user.id });
         res.status(200).json(reports);
@@ -108,7 +108,7 @@ app.get('/dashboard', authenticateToken, async (req, res) => {
     }
 });
 
-app.put('/dashboard/:id', authenticateToken, async (req, res) => {
+app.put('/api/dashboard/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const updatedReport = req.body;
 
@@ -124,7 +124,7 @@ app.put('/dashboard/:id', authenticateToken, async (req, res) => {
     }
 });
 
-app.delete('/dashboard/:id', authenticateToken, async (req, res) => {
+app.delete('/api/dashboard/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     console.log(`Received delete request for report ID: ${id}`);
 
