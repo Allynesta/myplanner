@@ -58,7 +58,7 @@ const Nav = () => {
 					</>
 				)}
 				<Link to="#" className="icon" onClick={toggleResponsive}>
-					<i className="fa fa-bars"></i>
+					<i className="fa fa-bars">x</i>
 				</Link>
 			</nav>
 		</header>
