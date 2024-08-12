@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import PlannerPage from "./pages/PlannerPage";
@@ -14,11 +14,30 @@ import Login from "./components/Login";
 import { AuthProvider } from "./AuthContext";
 import ProtectedRoute from "./ProtectedRoute";
 
+// Example report data (you can replace this with actual data)
+const initialReportData = [
+	{
+		reportId: 1,
+		location: "New York",
+		description: "Annual Meeting",
+		date: new Date(),
+		pax: 100,
+		price: 500,
+		total: 50000,
+	},
+	// Add more reports as needed
+];
+
 const App: React.FC = () => {
+	const [reportData, setReportData] = useState(initialReportData);
+
 	// Implement the delete handler function
-	const handleDelete = () => {
-		// Handle delete functionality (this can be implemented as needed)
-		console.log("Delete report with id ${id}");
+	const handleDelete = (reportId: number) => {
+		const updatedReportData = reportData.filter(
+			(report) => report.reportId !== reportId
+		);
+		setReportData(updatedReportData);
+		console.log(`Deleted report with id ${reportId}`);
 	};
 
 	return (
@@ -34,11 +53,15 @@ const App: React.FC = () => {
 						<Route path="/Dashboard" element={<Dashboard />} />
 						<Route
 							path="/Report-Table"
-							element={<ReportPage onDelete={handleDelete} reportData={[]} />}
+							element={
+								<ReportPage onDelete={handleDelete} reportData={reportData} />
+							}
 						/>
 						<Route
 							path="/Report-Card"
-							element={<ReportCard onDelete={handleDelete} />}
+							element={
+								<ReportCard onDelete={handleDelete} report={reportData} />
+							}
 						/>
 					</Route>
 				</Routes>

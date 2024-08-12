@@ -17,7 +17,6 @@ interface ReportData {
 interface Props {
 	onDelete: (reportId: number) => void;
 	report: ReportData[];
-	onUpdate: (updatedReport: ReportData) => void;
 }
 
 const ReportCard: React.FC<Props> = ({ onDelete }) => {
