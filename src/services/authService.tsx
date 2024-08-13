@@ -3,7 +3,7 @@ import axios from "axios";
 // Dynamically set the API URL based on the environment
 const API_URL =
 	process.env.NODE_ENV === "production"
-		? "https://myplanner-green.vercel.app/api"
+		? "https://myplanner-green.vercel.app/"
 		: "http://localhost:5000/api";
 
 // Helper function to get the token from localStorage and format it
