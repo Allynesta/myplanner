@@ -7,19 +7,19 @@ require('dotenv').config();
 
 const app = express();
 app.use(express.json());
+// CORS configuration
 const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000', 'https://myplanner-green.vercel.app'];
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin like mobile apps or curl requests
+        // allow requests with no origin, like mobile apps or curl requests
         if (!origin) return callback(null, true);
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        } else {
-            return callback(new Error('Not allowed by CORS'));
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
         }
-    },
-    credentials: true // if you want to allow cookies to be sent with requests
+        return callback(null, true);
+    }
 }));
 
 mongoose.connect(process.env.MONGO_URI, {
