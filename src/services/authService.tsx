@@ -4,7 +4,7 @@ import axios from "axios";
 const API_URL =
 	process.env.NODE_ENV === "production"
 		? "https://myplanner-green.vercel.app/"
-		: "http://localhost:5000/api";
+		: "http://localhost:5000";
 
 // Helper function to get the token from localStorage and format it
 const getAuthHeader = () => {
