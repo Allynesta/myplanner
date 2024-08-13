@@ -1,9 +1,8 @@
 {
-    "rewrites": [
+  "rewrites": [
       {
-        "source": "/api/(.*)",
-        "destination": "/backend/server.js"
+          "source": "/api/(.*)",
+          "destination": "/backend/server.js"
       }
-    ]
-  }
-  
+  ]
+}

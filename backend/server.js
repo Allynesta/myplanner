@@ -8,8 +8,11 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 // CORS configuration
-const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000', 'https://myplanner-green.vercel.app'];
-
+const allowedOrigins = [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'https://myplanner-green.vercel.app',
+    'http://localhost:5173'  // Add this line
+];
 app.use(cors({
     origin: function (origin, callback) {
         // allow requests with no origin, like mobile apps or curl requests
