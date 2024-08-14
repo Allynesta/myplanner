@@ -61,7 +61,7 @@ const Dashboard = () => {
 		const newReport: ReportData = {
 			...data,
 			date: value as Date,
-			reportId: reportData.length + 1,
+			reportId: Math.floor(Math.random() * 1000),
 			total: data.price * data.pax,
 		};
 		try {
