@@ -28,10 +28,10 @@ const DataForm: React.FC<Props> = ({ onSubmit, selectedDate }) => {
 				validate={(values) => {
 					const errors: Partial<Record<keyof FormData, string>> = {}; // Define correct typing for errors
 					if (!values.location) {
-						errors.location = "Location is required";
+						errors.location = "Location is required!!";
 					}
 					if (!values.description) {
-						errors.description = "Description is required";
+						errors.description = "Description is required!!";
 					}
 					if (values.pax <= 0) {
 						errors.pax = "Pax must be greater than 0";

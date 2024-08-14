@@ -4,10 +4,10 @@ import "react-calendar/dist/Calendar.css";
 import DataForm from "../components/DataForm";
 import Modal from "react-modal";
 import "../styles/dashboard.css";
+import { saveReport, fetchReports } from "../services/authService";
 
-// Interface for report data
 interface ReportData {
-	id: number;
+	reportId: number;
 	location: string;
 	description: string;
 	date: Date;
@@ -16,35 +16,33 @@ interface ReportData {
 	total: number;
 }
 
+Modal.setAppElement("#root"); // or the ID of your root element
+
 const Dashboard = () => {
-	// State for selected date, show form, report data, selected report, and reports for date
 	const [value, setValue] = useState<Date | null>(null);
 	const [showForm, setShowForm] = useState(false);
 	const [reportData, setReportData] = useState<ReportData[]>([]);
 	const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
 	const [reportsForDate, setReportsForDate] = useState<ReportData[]>([]);
 
-	// Load report data from local storage on mount
 	useEffect(() => {
-		const storedData = localStorage.getItem("plannerData");
-		if (storedData) {
-			const parsedData: ReportData[] = JSON.parse(storedData).map(
-				(report: { date: string | number | Date }) => ({
-					...report,
-					date: new Date(report.date),
-				})
-			);
-			setReportData(parsedData);
-		}
+		const loadReports = async () => {
+			try {
+				// Fetch reports from the database
+				const reports = await fetchReports();
+				setReportData(reports);
+			} catch (error) {
+				console.error("Error loading reports:", error);
+			}
+		};
+
+		loadReports();
 	}, []);
 
-	// Handle date change, open DataForm if no report is selected
 	const handleDateChange = (value: Date | Date[] | null) => {
-		// If the selected date is an array (e.g., a range of dates), use the first date
 		if (Array.isArray(value)) {
 			setValue(value[0]);
 		} else {
-			// Otherwise, use the single selected date
 			setValue(value);
 		}
 		if (!selectedReport) {
@@ -54,8 +52,7 @@ const Dashboard = () => {
 		}
 	};
 
-	// Handle form submission, close DataForm and add new report to report data
-	const handleSubmit = (data: {
+	const handleSubmit = async (data: {
 		location: string;
 		description: string;
 		pax: number;
@@ -64,19 +61,24 @@ const Dashboard = () => {
 		const newReport: ReportData = {
 			...data,
 			date: value as Date,
-			id: Date.now(),
-			total: 0,
+			reportId: reportData.length + 1,
+			total: data.price * data.pax,
 		};
-		setReportData([...reportData, newReport]);
-		localStorage.setItem(
-			"plannerData",
-			JSON.stringify([...reportData, newReport])
-		);
-		setShowForm(false);
-		setValue(null);
+		try {
+			// Save report to the database
+			await saveReport(newReport);
+
+			// Update the report data state
+			const updatedReportData = [...reportData, newReport];
+			setReportData(updatedReportData);
+
+			setShowForm(false);
+			setValue(null);
+		} catch (error) {
+			console.error("Error saving report:", error);
+		}
 	};
 
-	// Handle click on date with reports, show reports for date
 	const handleDateClick = (date: Date) => {
 		const reports = reportData.filter(
 			(report) => report.date.toLocaleDateString() === date.toLocaleDateString()
@@ -85,10 +87,10 @@ const Dashboard = () => {
 		if (reports.length > 0) {
 			setReportsForDate(reports);
 			setShowForm(false);
-			setValue(date);
 		} else {
 			setReportsForDate([]);
 		}
+		setValue(date);
 		setSelectedReport(null);
 	};
 
@@ -102,7 +104,7 @@ const Dashboard = () => {
 				<div
 					className="indicator"
 					onClick={(e) => {
-						e.stopPropagation(); // prevent click event from bubbling up
+						e.stopPropagation();
 						handleDateClick(date);
 					}}
 				>
@@ -122,7 +124,7 @@ const Dashboard = () => {
 		<div className="dashboard">
 			<h2>Dashboard</h2>
 			<Calendar
-				onChange={(value) => handleDateChange(value as Date | Date[] | null)} // Handle date change
+				onChange={(value) => handleDateChange(value as Date | Date[] | null)}
 				value={value}
 				className="custom-calendar"
 				tileContent={tileContent}
@@ -143,14 +145,11 @@ const Dashboard = () => {
 						</h2>
 						{reportsForDate.map((report) => (
 							<div
-								key={report.id}
+								key={report.reportId}
 								className="report-summary"
 								onClick={() => setSelectedReport(report)}
 							>
-								<span>
-									<p className="report-item">- {report.location}</p>
-									<br />
-								</span>
+								<p className="report-item">- {report.location}</p>
 							</div>
 						))}
 					</div>
@@ -176,11 +175,7 @@ const Dashboard = () => {
 							<span>Price:</span> {selectedReport.price}
 						</div>
 						<div>
-							<span>Price:</span>{" "}
-							{
-								(selectedReport.total =
-									selectedReport.price * selectedReport.pax)
-							}
+							<span>Total:</span> {selectedReport.price * selectedReport.pax}
 						</div>
 					</div>
 				</Modal>

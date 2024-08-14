@@ -1,7 +1,7 @@
 import React from "react";
 
 interface ReportData {
-	id: number;
+	reportId: number;
 	date: Date;
 	location: string;
 	description: string;
@@ -12,13 +12,13 @@ interface ReportData {
 
 interface Props {
 	data: ReportData;
-	onDelete: (id: number) => void;
+	onDelete: (reportId: number) => void;
 }
 
 const ReportItem: React.FC<Props> = ({ data, onDelete }) => {
 	const handleDelete = () => {
 		if (window.confirm("Are you sure you want to delete this item?")) {
-			onDelete(data.id);
+			onDelete(data.reportId);
 		}
 	};
 
