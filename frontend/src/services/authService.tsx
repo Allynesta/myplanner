@@ -1,6 +1,12 @@
 import axios from "axios";
 
+<<<<<<< HEAD:frontend/src/services/authService.tsx
 const API_URL = "http://localhost:5000";
+=======
+// Dynamically set the API URL based on the environment
+const API_URL =
+	process.env.NODE_ENV === "production" ? "/api" : "http://localhost:5000/";
+>>>>>>> 116dcdaa14960be01c65c3d2cea51dccf1680437:src/services/authService.tsx
 
 // Helper function to get the token from localStorage and format it
 const getAuthHeader = () => {
