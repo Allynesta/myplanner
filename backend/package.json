@@ -19,7 +19,7 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.8.0",
-    "mongoose": "^8.5.1",
+    "mongoose": "^8.5.3",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
