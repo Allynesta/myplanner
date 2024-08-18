@@ -43,14 +43,20 @@ const Home = () => {
 	return (
 		<div className="grid h-screen place-content-center bg-white px-4">
 			<h1 className="text-2xl font-semibold">Welcome!</h1>
-			<p className="mt-4 text-lg">
-				{" "}
-				{pastReportsCount} report(s) in the past and{" "}
-			</p>
-			<p className="mt-4 text-lg">
-				{" "}
-				{futureReportsCount} report(s) in the future.{" "}
-			</p>
+			<ul>
+				<li>
+					<p className="mt-4 text-lg">
+						{" "}
+						{pastReportsCount} report(s) in the past.{" "}
+					</p>
+				</li>
+				<li>
+					<p className="mt-4 text-lg">
+						{" "}
+						{futureReportsCount} report(s) in the future.{" "}
+					</p>
+				</li>
+			</ul>
 		</div>
 	);
 };
