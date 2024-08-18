@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { register } from "../services/authService";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Register: React.FC = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
+	const navigate = useNavigate();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -15,6 +17,7 @@ const Register: React.FC = () => {
 			setUsername("");
 			setPassword("");
 			setError(null);
+			navigate("/Login");
 		} catch (err: unknown) {
 			if (axios.isAxiosError(err) && err.response && err.response.data) {
 				setError(err.response.data.message);
