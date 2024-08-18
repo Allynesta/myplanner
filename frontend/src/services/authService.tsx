@@ -29,6 +29,7 @@ interface ReportData {
 	description: string;
 	pax: number;
 	price: number;
+	expense: number;
 	total: number;
 }
 
@@ -40,6 +41,7 @@ interface ReportApiResponse {
 	description: string;
 	pax: number;
 	price: number;
+	expense: number;
 	total: number;
 }
 

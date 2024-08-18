@@ -7,6 +7,7 @@ interface ReportData {
 	description: string;
 	pax: number;
 	price: number;
+	expense: number;
 	total: number;
 }
 
@@ -32,10 +33,12 @@ const ReportItem: React.FC<Props> = ({ data, onDelete }) => {
 			<br />
 			<strong>Description:</strong> {data.description}
 			<br />
+			<strong>Expenses:</strong> {data.expense}
+			<br />
 			<strong>Date:</strong>
 			{data.date.toDateString()}
 			<br />
-			<strong>Total:</strong> {(data.total = data.price * data.pax)}
+			<strong>Total:</strong> {data.total}
 			<br />
 			<button onClick={handleDelete}>Delete</button>
 			<button>Edit</button>

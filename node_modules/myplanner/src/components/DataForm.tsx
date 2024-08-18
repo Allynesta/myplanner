@@ -7,6 +7,7 @@ interface FormData {
 	description: string;
 	pax: number;
 	price: number;
+	expense: number;
 }
 
 interface Props {
@@ -24,6 +25,7 @@ const DataForm: React.FC<Props> = ({ onSubmit, selectedDate }) => {
 					description: "",
 					pax: 0,
 					price: 0,
+					expense: 0,
 				}}
 				validate={(values) => {
 					const errors: Partial<Record<keyof FormData, string>> = {}; // Define correct typing for errors
@@ -38,6 +40,9 @@ const DataForm: React.FC<Props> = ({ onSubmit, selectedDate }) => {
 					}
 					if (values.price <= 0) {
 						errors.price = "Price must be greater than 0";
+					}
+					if (values.expense <= 0) {
+						errors.expense = "Expense must be greater than 0";
 					}
 					return errors;
 				}}
@@ -58,6 +63,7 @@ const DataForm: React.FC<Props> = ({ onSubmit, selectedDate }) => {
 							<Field id="location" name="location" as="select">
 								<option value="">Select location</option>
 								<option value="pieter">Pieter Both</option>
+								<option value="pieds">500 Pieds</option>
 								<option value="morne">Le Morne</option>
 								<option value="cascade">7 Cascades</option>
 							</Field>
@@ -83,6 +89,14 @@ const DataForm: React.FC<Props> = ({ onSubmit, selectedDate }) => {
 								<div className="error-message">{errors.price}</div>
 							) : null}
 							<Field id="price" name="price" type="number" />
+						</div>
+
+						<div>
+							<label htmlFor="expense">Expenses:</label>
+							{errors.expense && touched.expense ? (
+								<div className="error-message">{errors.expense}</div>
+							) : null}
+							<Field id="expense" name="expense" type="number" />
 						</div>
 
 						<button className="btn-submit" type="submit">
