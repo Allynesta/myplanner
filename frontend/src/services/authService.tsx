@@ -12,10 +12,12 @@ const getAuthHeader = () => {
 	return token ? `Bearer ${token}` : "";
 };
 
+// Function to register a new user
 export const register = async (username: string, password: string) => {
 	return axios.post(`${API_URL}/register`, { username, password });
 };
 
+// Function to log in an existing user
 export const login = async (username: string, password: string) => {
 	return axios.post(`${API_URL}/login`, { username, password });
 };
@@ -30,7 +32,7 @@ interface ReportData {
 	total: number;
 }
 
-// New type for the API response
+// New type for the API response for fetching reports
 interface ReportApiResponse {
 	reportId: number;
 	date: string; // Date is returned as a string from the API
@@ -41,7 +43,7 @@ interface ReportApiResponse {
 	total: number;
 }
 
-// Modify this function to handle saving reports to the database
+// Function to save a report to the database
 export const saveReport = async (report: ReportData) => {
 	try {
 		const response = await axios.post(`${API_URL}/dashboard`, report, {
@@ -54,13 +56,14 @@ export const saveReport = async (report: ReportData) => {
 	}
 };
 
-// New function to fetch reports from the database
+// Function to fetch reports from the database
 export const fetchReports = async (): Promise<ReportData[]> => {
 	try {
 		const response = await axios.get<ReportApiResponse[]>(
 			`${API_URL}/dashboard`,
 			{ headers: { Authorization: getAuthHeader() } }
 		);
+		// Convert date strings to Date objects
 		return response.data.map((report) => ({
 			...report,
 			date: new Date(report.date),
@@ -71,6 +74,7 @@ export const fetchReports = async (): Promise<ReportData[]> => {
 	}
 };
 
+// Function to delete a report by its ID
 export const deleteReport = async (reportId: number) => {
 	try {
 		const response = await axios.delete(`${API_URL}/dashboard/${reportId}`, {
@@ -80,6 +84,19 @@ export const deleteReport = async (reportId: number) => {
 		return response.data;
 	} catch (error) {
 		console.error("Error deleting report:", error);
+		throw error;
+	}
+};
+
+// Function to fetch the username of the logged-in user
+export const fetchUsername = async (): Promise<string> => {
+	try {
+		const response = await axios.get(`${API_URL}/username`, {
+			headers: { Authorization: getAuthHeader() },
+		});
+		return response.data.username;
+	} catch (error) {
+		console.error("Error fetching username:", error);
 		throw error;
 	}
 };
