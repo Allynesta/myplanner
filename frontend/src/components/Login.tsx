@@ -15,7 +15,7 @@ const Login: React.FC = () => {
 			const response = await login(username, password);
 			authLogin(response.data.token);
 			alert("User logged in successfully");
-			navigate("/");
+			navigate("/#");
 		} catch (error) {
 			alert("Error logging in");
 		}

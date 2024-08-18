@@ -92,6 +92,7 @@ const reportSchema = new mongoose.Schema({
     date: { type: Date, required: true },
     pax: { type: Number, required: true },
     price: { type: Number, required: true },
+    expense: { type: Number, required: true },
     total: { type: Number, required: true },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 });

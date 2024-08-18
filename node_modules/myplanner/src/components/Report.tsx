@@ -10,6 +10,7 @@ interface ReportData {
 	date: Date;
 	pax: number;
 	price: number;
+	expense: number;
 	total: number;
 }
 

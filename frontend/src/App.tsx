@@ -23,6 +23,7 @@ const initialReportData = [
 		date: new Date(),
 		pax: 100,
 		price: 500,
+		expense: 500,
 		total: 50000,
 	},
 	// Add more reports as needed
