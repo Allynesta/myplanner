@@ -69,6 +69,21 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
+// Route to fetch the username of the authenticated user
+app.get('/username', authenticateToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('username');
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+        res.status(200).json({ username: user.username });
+    } catch (error) {
+        console.error('Error fetching username:', error);
+        res.status(500).send('Error fetching username');
+    }
+});
+
+
 
 const reportSchema = new mongoose.Schema({
     reportId: { type: Number, required: true },

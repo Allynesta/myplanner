@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../AuthContext";
-import { fetchReports } from "../services/authService";
+import { fetchReports, fetchUsername } from "../services/authService";
 
 const Home = () => {
 	const { isAuthenticated } = useAuth();
+	const [username, setUsername] = useState<string | null>(null);
 	const [pastReportsCount, setPastReportsCount] = useState(0);
 	const [futureReportsCount, setFutureReportsCount] = useState(0);
 
 	useEffect(() => {
-		const fetchReportCounts = async () => {
+		const fetchUserData = async () => {
 			if (isAuthenticated) {
 				try {
+					// Fetch the username
+					const username = await fetchUsername();
+					setUsername(username);
+
+					// Fetch and calculate report counts
 					const reports = await fetchReports();
 					const now = new Date();
 					const pastReports = reports.filter(
@@ -22,12 +28,12 @@ const Home = () => {
 					setPastReportsCount(pastReports);
 					setFutureReportsCount(futureReports);
 				} catch (error) {
-					console.error("Error fetching reports:", error);
+					console.error("Error fetching user data:", error);
 				}
 			}
 		};
 
-		fetchReportCounts();
+		fetchUserData();
 	}, [isAuthenticated]);
 
 	if (!isAuthenticated) {
@@ -42,18 +48,16 @@ const Home = () => {
 
 	return (
 		<div className="grid h-screen place-content-center bg-white px-4">
-			<h1 className="text-2xl font-semibold">Welcome!</h1>
+			<h1 className="text-2xl font-semibold">Welcome, {username}!</h1>
 			<ul>
 				<li>
 					<p className="mt-4 text-lg">
-						{" "}
-						{pastReportsCount} report(s) in the past.{" "}
+						{pastReportsCount} report(s) in the past.
 					</p>
 				</li>
 				<li>
 					<p className="mt-4 text-lg">
-						{" "}
-						{futureReportsCount} report(s) in the future.{" "}
+						{futureReportsCount} report(s) in the future.
 					</p>
 				</li>
 			</ul>
