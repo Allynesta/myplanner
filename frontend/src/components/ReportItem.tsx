@@ -38,7 +38,7 @@ const ReportItem: React.FC<Props> = ({ data, onDelete }) => {
 			<strong>Total:</strong> {(data.total = data.price * data.pax)}
 			<br />
 			<button onClick={handleDelete}>Delete</button>
-			<i className="far fa-edit"></i>
+			<button>Edit</button>
 		</li>
 	);
 };
