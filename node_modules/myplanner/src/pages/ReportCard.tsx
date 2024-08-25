@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Report from "../components/Report";
 import { fetchReports, deleteReport } from "../services/authService";
 import "../styles/reportcard.css";
@@ -23,6 +23,7 @@ const ReportCard: React.FC<Props> = ({ onDelete }) => {
 	const [reportData, setReportData] = useState<ReportData[]>([]);
 	const [error, setError] = useState<string | null>(null);
 
+	// Fetch data using useEffect
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -37,19 +38,22 @@ const ReportCard: React.FC<Props> = ({ onDelete }) => {
 		fetchData();
 	}, []);
 
-	const handleDeleteItem = async (id: number) => {
-		try {
-			await deleteReport(id);
-			const updatedReportData = reportData.filter(
-				(data) => data.reportId !== id
-			);
-			setReportData(updatedReportData);
-			onDelete(id);
-		} catch (error) {
-			console.error("Error deleting report:", error);
-			setError("Failed to delete report.");
-		}
-	};
+	// Memoized callback to handle report deletion
+	const handleDeleteItem = useCallback(
+		async (id: number) => {
+			try {
+				await deleteReport(id);
+				setReportData((prevData) =>
+					prevData.filter((data) => data.reportId !== id)
+				);
+				onDelete(id);
+			} catch (error) {
+				console.error("Error deleting report:", error);
+				setError("Failed to delete report.");
+			}
+		},
+		[onDelete]
+	);
 
 	return (
 		<>
