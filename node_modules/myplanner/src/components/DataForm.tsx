@@ -13,20 +13,27 @@ interface FormData {
 interface Props {
 	onSubmit: (data: FormData) => void;
 	selectedDate: Date | null; // Receive the selected date from PlannerPage
+	initialValues?: FormData; // Optional initial values for editing
 }
 
-const DataForm: React.FC<Props> = ({ onSubmit, selectedDate }) => {
+const DataForm: React.FC<Props> = ({
+	onSubmit,
+	selectedDate,
+	initialValues,
+}) => {
 	return (
 		<div>
-			<h2>Data Form</h2>
+			<h2>{initialValues ? "Edit Report" : "Data Form"}</h2>
 			<Formik
-				initialValues={{
-					location: "",
-					description: "",
-					pax: 0,
-					price: 0,
-					expense: 0,
-				}}
+				initialValues={
+					initialValues || {
+						location: "",
+						description: "",
+						pax: 0,
+						price: 0,
+						expense: 0,
+					}
+				}
 				validate={(values) => {
 					const errors: Partial<Record<keyof FormData, string>> = {}; // Define correct typing for errors
 					if (!values.location) {
@@ -100,7 +107,7 @@ const DataForm: React.FC<Props> = ({ onSubmit, selectedDate }) => {
 						</div>
 
 						<button className="btn-submit" type="submit">
-							Submit
+							{initialValues ? "Save Changes" : "Submit"}
 						</button>
 					</Form>
 				)}

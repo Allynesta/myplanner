@@ -164,6 +164,28 @@ app.delete('/dashboard/:id', authenticateToken, async (req, res) => {
     }
 });
 
+
+app.put('/dashboard/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const updatedReport = req.body;
+
+    try {
+        const result = await Report.findOneAndUpdate(
+            { reportId: id, userId: req.user.id },
+            updatedReport,
+            { new: true }
+        );
+        if (!result) {
+            return res.status(404).send('Report not found');
+        }
+        res.send(result);
+    } catch (error) {
+        console.error('Error updating report:', error);
+        res.status(500).send('Error updating report');
+    }
+});
+
+
 app.get('/', (req, res) => {
     res.send('Backend server is running.');
 });

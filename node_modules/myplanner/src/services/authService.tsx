@@ -102,3 +102,23 @@ export const fetchUsername = async (): Promise<string> => {
 		throw error;
 	}
 };
+
+// Function to update a report in the database
+export const updateReport = async (
+	reportId: number,
+	updatedReport: Partial<ReportData>
+) => {
+	try {
+		const response = await axios.put(
+			`${API_URL}/dashboard/${reportId}`,
+			updatedReport,
+			{
+				headers: { Authorization: getAuthHeader() },
+			}
+		);
+		return response.data;
+	} catch (error) {
+		console.error("Error updating report:", error);
+		throw error;
+	}
+};
