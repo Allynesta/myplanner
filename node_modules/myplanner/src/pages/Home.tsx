@@ -7,16 +7,16 @@ const Home = () => {
 	const [username, setUsername] = useState<string | null>(null);
 	const [pastReportsCount, setPastReportsCount] = useState(0);
 	const [futureReportsCount, setFutureReportsCount] = useState(0);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		const fetchUserData = async () => {
 			if (isAuthenticated) {
 				try {
-					// Fetch the username
 					const username = await fetchUsername();
 					setUsername(username);
 
-					// Fetch and calculate report counts
 					const reports = await fetchReports();
 					const now = new Date();
 					const pastReports = reports.filter(
@@ -29,12 +29,33 @@ const Home = () => {
 					setFutureReportsCount(futureReports);
 				} catch (error) {
 					console.error("Error fetching user data:", error);
+					setError("Failed to load data. Please try again later.");
+				} finally {
+					setLoading(false);
 				}
+			} else {
+				setLoading(false);
 			}
 		};
 
 		fetchUserData();
 	}, [isAuthenticated]);
+
+	if (loading) {
+		return (
+			<div className="grid h-screen place-content-center bg-white px-4">
+				<p>Loading...</p>
+			</div>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="grid h-screen place-content-center bg-white px-4">
+				<p className="text-red-500">{error}</p>
+			</div>
+		);
+	}
 
 	if (!isAuthenticated) {
 		return (

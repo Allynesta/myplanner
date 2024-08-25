@@ -14,23 +14,20 @@ import Login from "./components/Login";
 import { AuthProvider } from "./AuthContext";
 import ProtectedRoute from "./ProtectedRoute";
 
-// Example report data (you can replace this with actual data)
-const initialReportData = [
-	{
-		reportId: 1,
-		location: "New York",
-		description: "Annual Meeting",
-		date: new Date(),
-		pax: 100,
-		price: 500,
-		expense: 500,
-		total: 50000,
-	},
-	// Add more reports as needed
-];
+// Define the structure of the data each report will have
+interface ReportData {
+	reportId: number;
+	location: string;
+	description: string;
+	date: Date;
+	pax: number;
+	price: number;
+	expense: number;
+	total: number;
+}
 
 const App: React.FC = () => {
-	const [reportData, setReportData] = useState(initialReportData);
+	const [reportData, setReportData] = useState<ReportData[]>([]);
 
 	// Implement the delete handler function
 	const handleDelete = (reportId: number) => {
@@ -54,15 +51,11 @@ const App: React.FC = () => {
 						<Route path="/Dashboard" element={<Dashboard />} />
 						<Route
 							path="/Report-Table"
-							element={
-								<ReportPage onDelete={handleDelete} reportData={reportData} />
-							}
+							element={<ReportPage onDelete={handleDelete} />}
 						/>
 						<Route
 							path="/Report-Card"
-							element={
-								<ReportCard onDelete={handleDelete} report={reportData} />
-							}
+							element={<ReportCard onDelete={handleDelete} />}
 						/>
 					</Route>
 				</Routes>

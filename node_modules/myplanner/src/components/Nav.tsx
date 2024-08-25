@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
+import "../styles/nav.css"; // Assuming the CSS file is named "nav.css"
 
 const Nav = () => {
 	const [responsive, setResponsive] = useState(false);
@@ -12,7 +13,6 @@ const Nav = () => {
 	};
 
 	const handleNavLinkClick = () => {
-		// Close the responsive menu after clicking a nav link on mobile
 		if (responsive) {
 			setResponsive(false);
 		}
@@ -27,8 +27,8 @@ const Nav = () => {
 	return (
 		<header>
 			<nav className={`topnav ${responsive ? "responsive" : ""}`} id="myTopnav">
-				<Link to="/" onClick={handleNavLinkClick}>
-					Home
+				<Link to="/" className="logo" onClick={handleNavLinkClick}>
+					MyPlanner
 				</Link>
 				{isAuthenticated && (
 					<>
@@ -58,7 +58,7 @@ const Nav = () => {
 					</>
 				)}
 				<Link to="#" className="icon" onClick={toggleResponsive}>
-					<i className="fa fa-bars">x</i>
+					<i className="fa fa-bars">☰</i>
 				</Link>
 			</nav>
 		</header>

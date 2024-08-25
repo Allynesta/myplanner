@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import DataForm from "./DataForm"; // Import the DataForm component
+import "../styles/reportitem.css";
 
 interface ReportData {
 	reportId: number;

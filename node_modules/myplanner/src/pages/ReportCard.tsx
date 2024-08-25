@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Report from "../components/Report";
-import { fetchReports, deleteReport } from "../services/authService"; // Import the updateReport and deleteReport functions
+import { fetchReports, deleteReport } from "../services/authService";
 import "../styles/reportcard.css";
 
 // Define the structure of the data each report will have
@@ -17,11 +17,11 @@ interface ReportData {
 
 interface Props {
 	onDelete: (reportId: number) => void;
-	report: ReportData[];
 }
 
 const ReportCard: React.FC<Props> = ({ onDelete }) => {
 	const [reportData, setReportData] = useState<ReportData[]>([]);
+	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -30,16 +30,16 @@ const ReportCard: React.FC<Props> = ({ onDelete }) => {
 				setReportData(data);
 			} catch (error) {
 				console.error("Error fetching reports:", error);
+				setError("Failed to load reports.");
 			}
 		};
 
 		fetchData();
 	}, []);
 
-	// Handle item deletion
 	const handleDeleteItem = async (id: number) => {
 		try {
-			await deleteReport(id); // Call the delete function
+			await deleteReport(id);
 			const updatedReportData = reportData.filter(
 				(data) => data.reportId !== id
 			);
@@ -47,12 +47,14 @@ const ReportCard: React.FC<Props> = ({ onDelete }) => {
 			onDelete(id);
 		} catch (error) {
 			console.error("Error deleting report:", error);
+			setError("Failed to delete report.");
 		}
 	};
 
 	return (
 		<>
 			<h2>Report Card</h2>
+			{error && <p className="error">{error}</p>}
 			<div className="card-row">
 				<div className="card-column">
 					<div className="card">
