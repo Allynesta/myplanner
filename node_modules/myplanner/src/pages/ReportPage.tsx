@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import ReportTable from "../components/ReportTable";
 import { fetchReports, deleteReport } from "../services/authService";
-import "../styles/reportpage.css"; // Add a CSS file for styles if needed
 
 // Define the structure of the data each report will have
 interface ReportData {
