@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ReportTable from "../components/ReportTable";
 import { fetchReports, deleteReport } from "../services/authService";
 
@@ -22,6 +22,7 @@ const ReportPage: React.FC<Props> = ({ onDelete }) => {
 	const [reportData, setReportData] = useState<ReportData[]>([]);
 	const [error, setError] = useState<string | null>(null);
 
+	// Fetch reports on component mount
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -36,22 +37,25 @@ const ReportPage: React.FC<Props> = ({ onDelete }) => {
 		fetchData();
 	}, []);
 
-	const handleDeleteItem = async (id: number) => {
-		try {
-			await deleteReport(id); // Ensure backend is updated
-			const updatedReportData = reportData.filter(
-				(data) => data.reportId !== id
-			);
-			setReportData(updatedReportData);
-			onDelete(id);
-		} catch (error) {
-			console.error("Error deleting report:", error);
-			setError("Failed to delete report.");
-		}
-	};
+	// Memoized delete handler
+	const handleDeleteItem = useCallback(
+		async (id: number) => {
+			try {
+				await deleteReport(id); // Ensure backend is updated
+				setReportData((prevData) =>
+					prevData.filter((data) => data.reportId !== id)
+				);
+				onDelete(id);
+			} catch (error) {
+				console.error("Error deleting report:", error);
+				setError("Failed to delete report.");
+			}
+		},
+		[onDelete]
+	);
 
 	return (
-		<div>
+		<div className="report-page">
 			{error && <p className="error">{error}</p>}
 			<ReportTable
 				reportData={reportData.map((data) => ({

@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, Suspense, lazy } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import DataForm from "../components/DataForm";
 import Modal from "react-modal";
 import "../styles/dashboard.css";
 import { saveReport, fetchReports } from "../services/authService";
+import debounce from "lodash/debounce";
+
+// Dynamically import DataForm component
+const DataForm = lazy(() => import("../components/DataForm"));
 
 interface ReportData {
 	reportId: number;
@@ -29,9 +32,15 @@ const Dashboard = () => {
 	useEffect(() => {
 		const loadReports = async () => {
 			try {
-				// Fetch reports from the database
-				const reports = await fetchReports();
-				setReportData(reports);
+				// Check if reports are already cached
+				const cachedReports = localStorage.getItem("reports");
+				if (cachedReports) {
+					setReportData(JSON.parse(cachedReports));
+				} else {
+					const reports = await fetchReports();
+					setReportData(reports);
+					localStorage.setItem("reports", JSON.stringify(reports));
+				}
 			} catch (error) {
 				console.error("Error loading reports:", error);
 			}
@@ -40,61 +49,77 @@ const Dashboard = () => {
 		loadReports();
 	}, []);
 
-	const handleDateChange = (value: Date | Date[] | null) => {
-		if (Array.isArray(value)) {
-			setValue(value[0]);
-		} else {
-			setValue(value);
-		}
-		if (!selectedReport) {
-			setShowForm(true);
-		} else {
+	const handleDateChange = useCallback(
+		(value: Date | Date[] | null) => {
+			if (Array.isArray(value)) {
+				setValue(value[0]);
+			} else {
+				setValue(value);
+			}
+			if (!selectedReport) {
+				setShowForm(true);
+			} else {
+				setSelectedReport(null);
+			}
+		},
+		[selectedReport]
+	);
+
+	const handleSubmit = useCallback(
+		async (data: {
+			location: string;
+			description: string;
+			pax: number;
+			price: number;
+			expense: number;
+		}) => {
+			const newReport: ReportData = {
+				...data,
+				date: value as Date,
+				reportId: Math.floor(Math.random() * 1000),
+				total: data.price * data.pax - data.expense,
+			};
+			try {
+				// Save report to the database
+				await saveReport(newReport);
+
+				// Update the report data state
+				const updatedReportData = [...reportData, newReport];
+				setReportData(updatedReportData);
+				localStorage.setItem("reports", JSON.stringify(updatedReportData));
+
+				setShowForm(false);
+				setValue(null);
+			} catch (error) {
+				console.error("Error saving report:", error);
+			}
+		},
+		[reportData, value]
+	);
+
+	const handleDateClick = useCallback(
+		(date: Date) => {
+			const reports = reportData.filter(
+				(report) =>
+					report.date.toLocaleDateString() === date.toLocaleDateString()
+			);
+
+			if (reports.length > 0) {
+				setReportsForDate(reports);
+				setShowForm(false);
+			} else {
+				setReportsForDate([]);
+			}
+			setValue(date);
 			setSelectedReport(null);
-		}
-	};
+		},
+		[reportData]
+	);
 
-	const handleSubmit = async (data: {
-		location: string;
-		description: string;
-		pax: number;
-		price: number;
-		expense: number;
-	}) => {
-		const newReport: ReportData = {
-			...data,
-			date: value as Date,
-			reportId: Math.floor(Math.random() * 1000),
-			total: data.price * data.pax - data.expense,
-		};
-		try {
-			// Save report to the database
-			await saveReport(newReport);
-
-			// Update the report data state
-			const updatedReportData = [...reportData, newReport];
-			setReportData(updatedReportData);
-
-			setShowForm(false);
-			setValue(null);
-		} catch (error) {
-			console.error("Error saving report:", error);
-		}
-	};
-
-	const handleDateClick = (date: Date) => {
-		const reports = reportData.filter(
-			(report) => report.date.toLocaleDateString() === date.toLocaleDateString()
-		);
-
-		if (reports.length > 0) {
-			setReportsForDate(reports);
-			setShowForm(false);
-		} else {
-			setReportsForDate([]);
-		}
-		setValue(date);
-		setSelectedReport(null);
-	};
+	const debouncedHandleDateChange = useCallback(
+		debounce((value: Date | Date[] | null) => handleDateChange(value), 300),
+		[handleDateChange]
+	);
 
 	const tileContent = ({ date, view }: { date: Date; view: string }) => {
 		if (view === "month") {
@@ -126,15 +151,19 @@ const Dashboard = () => {
 		<div className="dashboard">
 			<h2>Dashboard</h2>
 			<Calendar
-				onChange={(value) => handleDateChange(value as Date | Date[] | null)}
+				onChange={(value) =>
+					debouncedHandleDateChange(value as Date | Date[] | null)
+				}
 				value={value}
 				className="custom-calendar"
 				tileContent={tileContent}
 			/>
 			{showForm && (
-				<Modal isOpen={showForm} onRequestClose={() => setShowForm(false)}>
-					<DataForm onSubmit={handleSubmit} selectedDate={value as Date} />
-				</Modal>
+				<Suspense fallback={<div>Loading...</div>}>
+					<Modal isOpen={showForm} onRequestClose={() => setShowForm(false)}>
+						<DataForm onSubmit={handleSubmit} selectedDate={value as Date} />
+					</Modal>
+				</Suspense>
 			)}
 			{reportsForDate.length > 0 && (
 				<Modal
@@ -146,13 +175,11 @@ const Dashboard = () => {
 							Reports for {value?.toLocaleDateString() ?? "date selected"}
 						</h2>
 						{reportsForDate.map((report) => (
-							<div
+							<ReportSummary
 								key={report.reportId}
-								className="report-summary"
-								onClick={() => setSelectedReport(report)}
-							>
-								<p className="report-item">- {report.location}</p>
-							</div>
+								report={report}
+								onClick={setSelectedReport}
+							/>
 						))}
 					</div>
 				</Modal>
@@ -188,5 +215,19 @@ const Dashboard = () => {
 		</div>
 	);
 };
+
+const ReportSummary = React.memo(
+	({
+		report,
+		onClick,
+	}: {
+		report: ReportData;
+		onClick: (report: ReportData) => void;
+	}) => (
+		<div className="report-summary" onClick={() => onClick(report)}>
+			<p className="report-item">- {report.location}</p>
+		</div>
+	)
+);
 
 export default Dashboard;
