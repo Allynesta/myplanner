@@ -23,7 +23,7 @@ const DataForm: React.FC<Props> = ({
 }) => {
 	return (
 		<div>
-			<h2>{initialValues ? "Edit Report" : "Data Form"}</h2>
+			<h2>{initialValues ? "Edit Report" : "New Report"}</h2>
 			<Formik
 				initialValues={
 					initialValues || {
