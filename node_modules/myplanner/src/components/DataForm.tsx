@@ -1,7 +1,6 @@
 import { Formik, Form, Field } from "formik";
 import "../styles/dataform.css";
 
-// Define the shape of the form data
 interface FormData {
 	location: string;
 	description: string;
@@ -12,8 +11,8 @@ interface FormData {
 
 interface Props {
 	onSubmit: (data: FormData) => void;
-	selectedDate: Date | null; // Receive the selected date from PlannerPage
-	initialValues?: FormData; // Optional initial values for editing
+	selectedDate: Date | null;
+	initialValues?: FormData;
 }
 
 const DataForm: React.FC<Props> = ({
@@ -22,8 +21,10 @@ const DataForm: React.FC<Props> = ({
 	initialValues,
 }) => {
 	return (
-		<div>
-			<h2>{initialValues ? "Edit Report" : "New Report"}</h2>
+		<div className="form-container">
+			<h2 className="form-title">
+				{initialValues ? "Edit Report" : "New Report"}
+			</h2>
 			<Formik
 				initialValues={
 					initialValues || {
@@ -35,7 +36,7 @@ const DataForm: React.FC<Props> = ({
 					}
 				}
 				validate={(values) => {
-					const errors: Partial<Record<keyof FormData, string>> = {}; // Define correct typing for errors
+					const errors: Partial<Record<keyof FormData, string>> = {};
 					if (!values.location) {
 						errors.location = "Location is required!!";
 					}
@@ -61,49 +62,82 @@ const DataForm: React.FC<Props> = ({
 				}}
 			>
 				{({ errors, touched }) => (
-					<Form>
-						<div>
+					<Form className="data-form">
+						<div className="form-group">
 							<label htmlFor="location">Location:</label>
-							{errors.location && touched.location ? (
-								<div className="error-message">{errors.location}</div>
-							) : null}
-							<Field id="location" name="location" as="select">
+							<Field
+								id="location"
+								name="location"
+								as="select"
+								className={
+									errors.location && touched.location ? "input-error" : ""
+								}
+							>
 								<option value="">Select location</option>
 								<option value="pieter">Pieter Both</option>
 								<option value="pieds">500 Pieds</option>
 								<option value="morne">Le Morne</option>
 								<option value="cascade">7 Cascades</option>
 							</Field>
+							{errors.location && touched.location && (
+								<div className="error-message">{errors.location}</div>
+							)}
 						</div>
 
-						<div>
+						<div className="form-group">
 							<label htmlFor="description">Description:</label>
-							{errors.description && touched.description ? (
+							<Field
+								id="description"
+								name="description"
+								as="textarea"
+								className={
+									errors.description && touched.description ? "input-error" : ""
+								}
+							/>
+							{errors.description && touched.description && (
 								<div className="error-message">{errors.description}</div>
-							) : null}
-							<Field id="description" name="description" as="textarea" />
-						</div>
-						<div>
-							<label htmlFor="pax">Pax:</label>
-							{errors.pax && touched.pax ? (
-								<div className="error-message">{errors.pax}</div>
-							) : null}
-							<Field id="pax" name="pax" type="number" />
-						</div>
-						<div>
-							<label htmlFor="price">Price:</label>
-							{errors.price && touched.price ? (
-								<div className="error-message">{errors.price}</div>
-							) : null}
-							<Field id="price" name="price" type="number" />
+							)}
 						</div>
 
-						<div>
+						<div className="form-group">
+							<label htmlFor="pax">Pax:</label>
+							<Field
+								id="pax"
+								name="pax"
+								type="number"
+								className={errors.pax && touched.pax ? "input-error" : ""}
+							/>
+							{errors.pax && touched.pax && (
+								<div className="error-message">{errors.pax}</div>
+							)}
+						</div>
+
+						<div className="form-group">
+							<label htmlFor="price">Price:</label>
+							<Field
+								id="price"
+								name="price"
+								type="number"
+								className={errors.price && touched.price ? "input-error" : ""}
+							/>
+							{errors.price && touched.price && (
+								<div className="error-message">{errors.price}</div>
+							)}
+						</div>
+
+						<div className="form-group">
 							<label htmlFor="expense">Expenses:</label>
-							{errors.expense && touched.expense ? (
+							<Field
+								id="expense"
+								name="expense"
+								type="number"
+								className={
+									errors.expense && touched.expense ? "input-error" : ""
+								}
+							/>
+							{errors.expense && touched.expense && (
 								<div className="error-message">{errors.expense}</div>
-							) : null}
-							<Field id="expense" name="expense" type="number" />
+							)}
 						</div>
 
 						<button className="btn-submit" type="submit">

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
 import { useAuth } from "../AuthContext";
+import "../styles/auth.css"; // Assuming the CSS file is named "auth.css"
 
 const Login: React.FC = () => {
 	const [username, setUsername] = useState("");
@@ -22,27 +23,34 @@ const Login: React.FC = () => {
 	};
 
 	return (
-		<form onSubmit={handleSubmit}>
-			<div>
-				<label>Username:</label>
-				<input
-					type="text"
-					value={username}
-					onChange={(e) => setUsername(e.target.value)}
-					required
-				/>
-			</div>
-			<div>
-				<label>Password:</label>
-				<input
-					type="password"
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-					required
-				/>
-			</div>
-			<button type="submit">Login</button>
-		</form>
+		<div className="auth-container">
+			<h2 className="auth-title">Login</h2>
+			<form className="auth-form" onSubmit={handleSubmit}>
+				<div className="auth-form-group">
+					<label htmlFor="username">Username:</label>
+					<input
+						id="username"
+						type="text"
+						value={username}
+						onChange={(e) => setUsername(e.target.value)}
+						required
+					/>
+				</div>
+				<div className="auth-form-group">
+					<label htmlFor="password">Password:</label>
+					<input
+						id="password"
+						type="password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						required
+					/>
+				</div>
+				<button className="btn-submit" type="submit">
+					Login
+				</button>
+			</form>
+		</div>
 	);
 };
 

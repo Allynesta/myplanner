@@ -1,6 +1,7 @@
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import "../styles/calender.css"; // Assuming the CSS file is named "calender.css"
 
 interface Props {
 	onSelect: (date: Date) => void;
@@ -8,7 +9,7 @@ interface Props {
 
 const Calender: React.FC<Props> = ({ onSelect }) => {
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-	const [error, setError] = useState<string | null>(null); // State to manage error messages
+	const [error, setError] = useState<string | null>(null);
 
 	// Function to check if the date is in the future
 	const isFutureDate = (date: Date) => new Date() < date;
@@ -30,8 +31,8 @@ const Calender: React.FC<Props> = ({ onSelect }) => {
 	};
 
 	return (
-		<div>
-			<h2>My Calendar</h2>
+		<div className="calendar-container">
+			<h2 className="calendar-title">My Calendar</h2>
 			<DatePicker
 				inline
 				showMonthDropdown
@@ -39,9 +40,9 @@ const Calender: React.FC<Props> = ({ onSelect }) => {
 				selected={selectedDate}
 				onChange={handleDateChange}
 				dateFormat="MMMM d, yyyy"
+				className="custom-datepicker"
 			/>
-			{error && <div className="error-message">{error}</div>}{" "}
-			{/* Display error message if present */}
+			{error && <div className="error-message">{error}</div>}
 		</div>
 	);
 };
