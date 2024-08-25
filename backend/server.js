@@ -151,7 +151,7 @@ app.delete('/dashboard/:id', authenticateToken, async (req, res) => {
 });
 
 
-app.post('/dashboard/:id', authenticateToken, async (req, res) => {
+app.put('/dashboard/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const updatedReport = req.body;
 
