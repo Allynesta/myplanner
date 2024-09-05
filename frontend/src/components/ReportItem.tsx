@@ -9,7 +9,11 @@ interface ReportData {
 	description: string;
 	pax: number;
 	price: number;
-	expense: number;
+	expense1: number;
+	expense2: number;
+	expense3: number;
+	expense4: number;
+	expense5: number;
 	total: number;
 }
 
@@ -43,7 +47,11 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 			<br />
 			<strong>Description:</strong> {data.description}
 			<br />
-			<strong>Expenses:</strong> {data.expense}
+			<strong>Expenses:</strong>- Food & Bev: {data.expense1}
+			<br />- Fuel: {data.expense2}
+			<br />- Staff: {data.expense3}
+			<br />- Commission: {data.expense4}
+			<br />- Others: {data.expense5}
 			<br />
 			<strong>Date:</strong>
 			{data.date.toDateString()}
@@ -65,7 +73,11 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 								description: data.description,
 								pax: data.pax,
 								price: data.price,
-								expense: data.expense,
+								expense1: data.expense1,
+								expense2: data.expense2,
+								expense3: data.expense3,
+								expense4: data.expense4,
+								expense5: data.expense5,
 							}}
 						/>
 					</div>

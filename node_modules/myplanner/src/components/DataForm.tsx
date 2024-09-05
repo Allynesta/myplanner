@@ -6,7 +6,11 @@ interface FormData {
 	description: string;
 	pax: number;
 	price: number;
-	expense: number;
+	expense1: number;
+	expense2: number;
+	expense3: number;
+	expense4: number;
+	expense5: number;
 }
 
 interface Props {
@@ -32,7 +36,11 @@ const DataForm: React.FC<Props> = ({
 						description: "",
 						pax: 0,
 						price: 0,
-						expense: 0,
+						expense1: 0,
+						expense2: 0,
+						expense3: 0,
+						expense4: 0,
+						expense5: 0,
 					}
 				}
 				validate={(values) => {
@@ -49,9 +57,7 @@ const DataForm: React.FC<Props> = ({
 					if (values.price <= 0) {
 						errors.price = "Price must be greater than 0";
 					}
-					if (values.expense <= 0) {
-						errors.expense = "Expense must be greater than 0";
-					}
+
 					return errors;
 				}}
 				onSubmit={(values, actions) => {
@@ -74,10 +80,13 @@ const DataForm: React.FC<Props> = ({
 								}
 							>
 								<option value="">Select location</option>
-								<option value="pieter">Pieter Both</option>
-								<option value="pieds">500 Pieds</option>
-								<option value="morne">Le Morne</option>
-								<option value="cascade">7 Cascades</option>
+								<option value="pieter both">Pieter Both</option>
+								<option value="500 pieds">500 Pieds</option>
+								<option value="le morne">Le Morne</option>
+								<option value="7 cascade">7 Cascades</option>
+								<option value="canyonning">7 Cascades - Canyon</option>
+								<option value="le sud">Le Sud</option>
+								<option value="program">Program</option>
 							</Field>
 							{errors.location && touched.location && (
 								<div className="error-message">{errors.location}</div>
@@ -127,17 +136,16 @@ const DataForm: React.FC<Props> = ({
 
 						<div className="form-group">
 							<label htmlFor="expense">Expenses:</label>
-							<Field
-								id="expense"
-								name="expense"
-								type="number"
-								className={
-									errors.expense && touched.expense ? "input-error" : ""
-								}
-							/>
-							{errors.expense && touched.expense && (
-								<div className="error-message">{errors.expense}</div>
-							)}
+							<label htmlFor="expense1">Food & Bev:</label>
+							<Field id="expense1" name="expense1" type="number" />
+							<label htmlFor="expense2">Fuel:</label>
+							<Field id="expense2" name="expense2" type="number" />
+							<label htmlFor="expense3">Staff:</label>
+							<Field id="expense3" name="expense3" type="number" />
+							<label htmlFor="expense4">Commission:</label>
+							<Field id="expense4" name="expense4" type="number" />
+							<label htmlFor="expense5">Others:</label>
+							<Field id="expense5" name="expense5" type="number" />
 						</div>
 
 						<button className="btn-submit" type="submit">

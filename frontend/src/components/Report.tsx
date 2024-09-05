@@ -10,7 +10,11 @@ interface ReportData {
 	date: Date;
 	pax: number;
 	price: number;
-	expense: number;
+	expense1: number;
+	expense2: number;
+	expense3: number;
+	expense4: number;
+	expense5: number;
 	total: number;
 }
 
@@ -34,10 +38,19 @@ const Report: React.FC<Props> = ({ reportData, onDelete }) => {
 			if (
 				updatedData.pax !== undefined &&
 				updatedData.price !== undefined &&
-				updatedData.expense !== undefined
+				updatedData.expense1 !== undefined &&
+				updatedData.expense2 !== undefined &&
+				updatedData.expense3 !== undefined &&
+				updatedData.expense4 !== undefined &&
+				updatedData.expense5 !== undefined
 			) {
 				updatedData.total =
-					updatedData.pax * updatedData.price - updatedData.expense;
+					updatedData.pax * updatedData.price -
+					(updatedData.expense1 +
+						updatedData.expense2 +
+						updatedData.expense3 +
+						updatedData.expense4 +
+						updatedData.expense5);
 			}
 
 			await updateReport(reportId, updatedData);
