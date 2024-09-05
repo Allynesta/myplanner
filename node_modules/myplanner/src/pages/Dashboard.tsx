@@ -13,7 +13,11 @@ interface ReportData {
 	date: Date;
 	pax: number;
 	price: number;
-	expense: number;
+	expense1: number;
+	expense2: number;
+	expense3: number;
+	expense4: number;
+	expense5: number;
 	total: number;
 }
 
@@ -58,13 +62,23 @@ const Dashboard = () => {
 		description: string;
 		pax: number;
 		price: number;
-		expense: number;
+		expense1: number;
+		expense2: number;
+		expense3: number;
+		expense4: number;
+		expense5: number;
 	}) => {
 		const newReport: ReportData = {
 			...data,
 			date: value as Date,
 			reportId: Math.floor(Math.random() * 1000),
-			total: data.price * data.pax - data.expense,
+			total:
+				data.price * data.pax -
+				(data.expense1 +
+					data.expense2 +
+					data.expense3 +
+					data.expense4 +
+					data.expense5),
 		};
 		try {
 			// Save report to the database
@@ -177,8 +191,17 @@ const Dashboard = () => {
 							<span>Price:</span> {selectedReport.price}
 						</div>
 						<div>
-							<span>Expenses:</span> {selectedReport.expense}
+							<span>
+								Expenses
+								<br />- Food & Bev: {selectedReport.expense1}
+								<br />- Fuel: {selectedReport.expense2}
+								<br />- Staff: {selectedReport.expense3}
+								<br />- Commission: {selectedReport.expense4}
+								<br />- Others: {selectedReport.expense5}
+							</span>{" "}
 						</div>
+						<br />
+
 						<div>
 							<span>Total:</span> {selectedReport.total}
 						</div>

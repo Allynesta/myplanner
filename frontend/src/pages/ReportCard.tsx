@@ -11,7 +11,11 @@ interface ReportData {
 	date: Date;
 	pax: number;
 	price: number;
-	expense: number;
+	expense1: number;
+	expense2: number;
+	expense3: number;
+	expense4: number;
+	expense5: number;
 	total: number;
 }
 
@@ -72,7 +76,11 @@ const ReportCard: React.FC<Props> = ({ onDelete }) => {
 									location: data.location,
 									pax: data.pax,
 									price: data.price,
-									expense: data.expense,
+									expense1: data.expense1,
+									expense2: data.expense2,
+									expense3: data.expense3,
+									expense4: data.expense4,
+									expense5: data.expense5,
 									total: data.total,
 								}))}
 							/>
