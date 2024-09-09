@@ -30,6 +30,13 @@ button.btn-submit {
   width: 100%;
 }
 
+.form-group.payment {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
 @media (max-width: 768px) {
   form {
     padding: 15px;
