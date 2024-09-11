@@ -79,3 +79,10 @@ button:active {
   flex-direction: column;
   gap: 20px;
 }
+
+
+.section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}

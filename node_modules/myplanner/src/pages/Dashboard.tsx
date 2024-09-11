@@ -18,6 +18,7 @@ interface ReportData {
 	expense3: number;
 	expense4: number;
 	expense5: number;
+	payment: string;
 	total: number;
 }
 
@@ -67,6 +68,7 @@ const Dashboard = () => {
 		expense3: number;
 		expense4: number;
 		expense5: number;
+		payment: string;
 	}) => {
 		const newReport: ReportData = {
 			...data,
@@ -202,8 +204,9 @@ const Dashboard = () => {
 						</div>
 						<br />
 
-						<div>
-							<span>Total:</span> {selectedReport.total}
+						<div className="section">
+							<span>Total: {selectedReport.total}</span>
+							<span>Payment: {selectedReport.payment}</span>
 						</div>
 					</div>
 				</Modal>

@@ -14,6 +14,7 @@ interface ReportData {
 	expense3: number;
 	expense4: number;
 	expense5: number;
+	payment: string;
 	total: number;
 }
 
@@ -39,27 +40,35 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 
 	return (
 		<li>
-			<strong>Location:</strong> {data.location}
+			<div className="section1">
+				<strong>Location:</strong> {data.location}
+				<br />
+				<strong>Date:</strong>
+				{data.date.toDateString()}
+				<br />
+				<strong>Pax:</strong> {data.pax}
+				<br />
+				<strong>Price:</strong> {data.price}
+				<br />
+				<strong>Description:</strong> {data.description}
+			</div>
+			<div className="section2">
+				<strong>Expenses:</strong>- Food & Bev: {data.expense1}
+				<br />- Fuel: {data.expense2}
+				<br />- Staff: {data.expense3}
+				<br />- Commission: {data.expense4}
+				<br />- Others: {data.expense5}
+				<br />
+			</div>
+			<div className="section3">
+				<strong>Total: {data.total}</strong>
+				<strong>Payment: {data.payment}</strong>
+			</div>
 			<br />
-			<strong>Pax:</strong> {data.pax}
-			<br />
-			<strong>Price:</strong> {data.price}
-			<br />
-			<strong>Description:</strong> {data.description}
-			<br />
-			<strong>Expenses:</strong>- Food & Bev: {data.expense1}
-			<br />- Fuel: {data.expense2}
-			<br />- Staff: {data.expense3}
-			<br />- Commission: {data.expense4}
-			<br />- Others: {data.expense5}
-			<br />
-			<strong>Date:</strong>
-			{data.date.toDateString()}
-			<br />
-			<strong>Total:</strong> {data.total}
-			<br />
-			<button onClick={handleDelete}>Delete</button>
-			<button onClick={() => setIsEditing(true)}>Edit</button>
+			<div className="section4">
+				<button onClick={handleDelete}>Delete</button>
+				<button onClick={() => setIsEditing(true)}>Edit</button>
+			</div>
 			{/* Conditional Rendering of DataForm Modal */}
 			{/* Conditionally render DataForm as a modal */}
 			{isEditing && (
@@ -78,6 +87,7 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 								expense3: data.expense3,
 								expense4: data.expense4,
 								expense5: data.expense5,
+								payment: data.payment,
 							}}
 						/>
 					</div>

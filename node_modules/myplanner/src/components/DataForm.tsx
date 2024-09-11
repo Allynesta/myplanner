@@ -11,6 +11,7 @@ interface FormData {
 	expense3: number;
 	expense4: number;
 	expense5: number;
+	payment: string;
 }
 
 interface Props {
@@ -41,6 +42,7 @@ const DataForm: React.FC<Props> = ({
 						expense3: 0,
 						expense4: 0,
 						expense5: 0,
+						payment: 0,
 					}
 				}
 				validate={(values) => {
@@ -146,6 +148,31 @@ const DataForm: React.FC<Props> = ({
 							<Field id="expense4" name="expense4" type="number" />
 							<label htmlFor="expense5">Others:</label>
 							<Field id="expense5" name="expense5" type="number" />
+						</div>
+
+						<label htmlFor="payment">Payment:</label>
+						<div className="form-group payment">
+							<label htmlFor="payment1">Not paid</label>
+							<Field
+								id="payment1"
+								name="payment"
+								value="Not paid"
+								type="radio"
+							/>
+							<label htmlFor="payment2">Paid by cash</label>
+							<Field
+								id="payment2"
+								name="payment"
+								value="Paid by cash"
+								type="radio"
+							/>
+							<label htmlFor="payment3">Paid by juice</label>
+							<Field
+								id="payment3"
+								name="payment"
+								value="Paid by juice"
+								type="radio"
+							/>
 						</div>
 
 						<button className="btn-submit" type="submit">
