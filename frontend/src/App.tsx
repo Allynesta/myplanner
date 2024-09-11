@@ -27,6 +27,8 @@ interface ReportData {
 	expense3: number;
 	expense4: number;
 	expense5: number;
+	payment: string;
+
 	total: number;
 }
 

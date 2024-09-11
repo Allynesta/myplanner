@@ -97,6 +97,7 @@ const reportSchema = new mongoose.Schema({
     expense3: { type: Number, required: true },
     expense4: { type: Number, required: true },
     expense5: { type: Number, required: true },
+    payment: { type: String, required: true },
     total: { type: Number, required: true },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 });
