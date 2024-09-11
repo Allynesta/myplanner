@@ -42,7 +42,7 @@ const DataForm: React.FC<Props> = ({
 						expense3: 0,
 						expense4: 0,
 						expense5: 0,
-						payment: 0,
+						payment: "",
 					}
 				}
 				validate={(values) => {
