@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import DataForm from "./DataForm"; // Import the DataForm component
+import Modal from "react-modal"; // Import Modal from react-modal
 import "../styles/reportitem.css";
+
+// Ensure app element is set for accessibility
+Modal.setAppElement("#root");
 
 interface ReportData {
 	reportId: number;
@@ -21,7 +25,7 @@ interface ReportData {
 interface Props {
 	data: ReportData;
 	onDelete: (reportId: number) => void;
-	onEdit: (reportId: number, updatedData: Partial<ReportData>) => void; // Added onEdit prop
+	onEdit: (reportId: number, updatedData: Partial<ReportData>) => void;
 }
 
 const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
@@ -43,8 +47,7 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 			<div className="section1">
 				<strong>Location:</strong> {data.location}
 				<br />
-				<strong>Date:</strong>
-				{data.date.toDateString()}
+				<strong>Date:</strong> {data.date.toDateString()}
 				<br />
 				<strong>Pax:</strong> {data.pax}
 				<br />
@@ -61,39 +64,44 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 				<br />
 			</div>
 			<div className="section3">
-				<strong>Total: {data.total}</strong>
-				<strong>Payment: {data.payment}</strong>
+				<strong>Total:</strong> {data.total}
+				<br />
+				<strong>Payment:</strong> {data.payment}
 			</div>
 			<br />
 			<div className="section4">
 				<button onClick={handleDelete}>Delete</button>
 				<button onClick={() => setIsEditing(true)}>Edit</button>
 			</div>
-			{/* Conditional Rendering of DataForm Modal */}
-			{/* Conditionally render DataForm as a modal */}
-			{isEditing && (
-				<div className="modal">
-					<div className="modal-content">
-						<DataForm
-							onSubmit={handleEdit}
-							selectedDate={data.date}
-							initialValues={{
-								location: data.location,
-								description: data.description,
-								pax: data.pax,
-								price: data.price,
-								expense1: data.expense1,
-								expense2: data.expense2,
-								expense3: data.expense3,
-								expense4: data.expense4,
-								expense5: data.expense5,
-								payment: data.payment,
-							}}
-						/>
-					</div>
-					<div className="modal-overlay" onClick={() => setIsEditing(false)} />
-				</div>
-			)}
+
+			{/* Modal for Editing */}
+			<Modal
+				isOpen={isEditing}
+				onRequestClose={() => setIsEditing(false)}
+				className="modal-content"
+				overlayClassName="modal-overlay"
+			>
+				<DataForm
+					onSubmit={handleEdit}
+					selectedDate={data.date}
+					initialValues={{
+						location: data.location,
+						description: data.description,
+						pax: data.pax,
+						price: data.price,
+						expense1: data.expense1,
+						expense2: data.expense2,
+						expense3: data.expense3,
+						expense4: data.expense4,
+						expense5: data.expense5,
+						payment: data.payment,
+					}}
+				/>
+				{/* Add a close button inside the modal */}
+				<button onClick={() => setIsEditing(false)} className="close-button">
+					Close
+				</button>
+			</Modal>
 		</li>
 	);
 };
