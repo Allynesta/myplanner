@@ -54,7 +54,16 @@ const App: React.FC = () => {
 					<Route path="/login" element={<Login />} />
 					<Route element={<ProtectedRoute />}>
 						<Route path="/PlannerPage" element={<PlannerPage />} />
-						<Route path="/Dashboard" element={<Dashboard />} />
+						<Route
+							path="/Dashboard"
+							element={
+								<Dashboard
+									onEdit={function (): void {
+										throw new Error("Function not implemented.");
+									}}
+								/>
+							}
+						/>
 						<Route
 							path="/Report-Table"
 							element={<ReportPage onDelete={handleDelete} />}
