@@ -177,6 +177,8 @@ app.put('/dashboard/:id', authenticateToken, async (req, res) => {
 });
 
 
+
+
 app.get('/', (req, res) => {
     res.send('Backend server is running.');
 });
