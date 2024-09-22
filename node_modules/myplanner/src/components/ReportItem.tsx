@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataForm from "./DataForm"; // Import the DataForm component
 import Modal from "react-modal"; // Import Modal from react-modal
 import "../styles/reportitem.css";
@@ -31,6 +31,19 @@ interface Props {
 const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 	const [isEditing, setIsEditing] = useState(false);
 
+	// Disable scroll when modal is open
+	useEffect(() => {
+		if (isEditing) {
+			document.body.style.overflow = "hidden";
+		} else {
+			document.body.style.overflow = "auto";
+		}
+		// Clean up to reset scroll style when component unmounts
+		return () => {
+			document.body.style.overflow = "auto";
+		};
+	}, [isEditing]);
+
 	const handleDelete = () => {
 		if (window.confirm("Are you sure you want to delete this item?")) {
 			onDelete(data.reportId);
@@ -39,7 +52,7 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 
 	const handleEdit = (updatedData: Partial<ReportData>) => {
 		onEdit(data.reportId, updatedData);
-		setIsEditing(false);
+		setIsEditing(false); // Close modal after edit
 	};
 
 	return (
