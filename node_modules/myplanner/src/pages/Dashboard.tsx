@@ -4,7 +4,12 @@ import "react-calendar/dist/Calendar.css";
 import DataForm from "../components/DataForm";
 import Modal from "react-modal";
 import "../styles/dashboard.css";
-import { saveReport, fetchReports } from "../services/authService";
+
+import {
+	saveReport,
+	fetchReports,
+	updateReport,
+} from "../services/authService";
 
 interface ReportData {
 	reportId: number;
@@ -22,11 +27,16 @@ interface ReportData {
 	total: number;
 }
 
+interface Props {
+	onEdit: (reportId: number, updatedData: Partial<ReportData>) => void;
+}
+
 Modal.setAppElement("#root"); // or the ID of your root element
 
-const Dashboard = () => {
+const Dashboard: React.FC<Props> = () => {
 	const [value, setValue] = useState<Date | null>(null);
 	const [showForm, setShowForm] = useState(false);
+	const [isEditing, setIsEditing] = useState(false);
 	const [reportData, setReportData] = useState<ReportData[]>([]);
 	const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
 	const [reportsForDate, setReportsForDate] = useState<ReportData[]>([]);
@@ -138,6 +148,45 @@ const Dashboard = () => {
 		return null;
 	};
 
+	const handleEdit = async (updatedData: Partial<ReportData>) => {
+		if (selectedReport) {
+			const updatedReport = {
+				...selectedReport,
+				...updatedData,
+			};
+
+			// Ensure total is recalculated
+			if (
+				updatedReport.pax !== undefined &&
+				updatedReport.price !== undefined &&
+				updatedReport.expense1 !== undefined &&
+				updatedReport.expense2 !== undefined &&
+				updatedReport.expense3 !== undefined &&
+				updatedReport.expense4 !== undefined &&
+				updatedReport.expense5 !== undefined
+			) {
+				updatedReport.total =
+					updatedReport.pax * updatedReport.price -
+					(updatedReport.expense1 +
+						updatedReport.expense2 +
+						updatedReport.expense3 +
+						updatedReport.expense4 +
+						updatedReport.expense5);
+			}
+
+			await updateReport(selectedReport.reportId, updatedReport);
+
+			const updatedReports = reportData.map((report) =>
+				report.reportId === selectedReport.reportId ? updatedReport : report
+			);
+
+			setReportData(updatedReports);
+
+			setIsEditing(false); // Close the modal
+			setSelectedReport(null); // Clear the selection
+		}
+	};
+
 	return (
 		<div className="dashboard">
 			<h2>Dashboard</h2>
@@ -178,7 +227,8 @@ const Dashboard = () => {
 					isOpen={!!selectedReport}
 					onRequestClose={() => setSelectedReport(null)}
 				>
-					<h2>Details - {selectedReport.location}</h2>
+					<h2>Details - {selectedReport.location} </h2>
+
 					<div className="card">
 						<div>
 							<span>Location:</span> {selectedReport.location}
@@ -193,24 +243,47 @@ const Dashboard = () => {
 							<span>Price:</span> {selectedReport.price}
 						</div>
 						<div>
-							<span>
-								Expenses
-								<br />- Food & Bev: {selectedReport.expense1}
-								<br />- Fuel: {selectedReport.expense2}
-								<br />- Staff: {selectedReport.expense3}
-								<br />- Commission: {selectedReport.expense4}
-								<br />- Others: {selectedReport.expense5}
-							</span>{" "}
+							<span>Expenses:</span>
+							<br />- Food & Bev: {selectedReport.expense1}
+							<br />- Fuel: {selectedReport.expense2}
+							<br />- Staff: {selectedReport.expense3}
+							<br />- Commission: {selectedReport.expense4}
+							<br />- Others: {selectedReport.expense5}
 						</div>
-						<br />
-
-						<div className="section">
-							<span>Total: {selectedReport.total}</span>
-							<span>Payment: {selectedReport.payment}</span>
+						<div>
+							<span>Total:</span> {selectedReport.total}
 						</div>
+						<div>
+							<span>Payment:</span> {selectedReport.payment}
+						</div>
+						<button onClick={() => setIsEditing(true)}>✏️</button>
 					</div>
 				</Modal>
 			)}
+
+			<Modal
+				isOpen={isEditing}
+				onRequestClose={() => setIsEditing(false)}
+				className="modal-content"
+				overlayClassName="modal-overlay"
+			>
+				<DataForm
+					onSubmit={handleEdit}
+					selectedDate={selectedReport?.date ?? new Date()}
+					initialValues={{
+						location: selectedReport?.location ?? "",
+						description: selectedReport?.description ?? "",
+						pax: selectedReport?.pax ?? 0,
+						price: selectedReport?.price ?? 0,
+						expense1: selectedReport?.expense1 ?? 0,
+						expense2: selectedReport?.expense2 ?? 0,
+						expense3: selectedReport?.expense3 ?? 0,
+						expense4: selectedReport?.expense4 ?? 0,
+						expense5: selectedReport?.expense5 ?? 0,
+						payment: selectedReport?.payment ?? "",
+					}}
+				/>
+			</Modal>
 		</div>
 	);
 };
