@@ -8,21 +8,6 @@
 
 .card {
   margin: 8px;
+  
 }
 
-.card-info {
-  padding: 0 16px;
-}
-
-.card-info::after,
-.card-row::after {
-  content: "";
-  clear: both;
-  display: table;
-}
-
-@media screen and (min-width: 600px) {
-  .card-column {
-    width: 33.3%;
-  }
-}
