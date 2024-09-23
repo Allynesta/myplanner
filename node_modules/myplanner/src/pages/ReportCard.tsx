@@ -67,26 +67,24 @@ const ReportCard: React.FC<Props> = ({ onDelete }) => {
 			<div className="card-row">
 				<div className="card-column">
 					<div className="card">
-						<div className="card-info">
-							<Report
-								onDelete={handleDeleteItem}
-								reportData={reportData.map((data) => ({
-									reportId: data.reportId,
-									description: data.description,
-									date: new Date(data.date),
-									location: data.location,
-									pax: data.pax,
-									price: data.price,
-									expense1: data.expense1,
-									expense2: data.expense2,
-									expense3: data.expense3,
-									expense4: data.expense4,
-									expense5: data.expense5,
-									payment: data.payment,
-									total: data.total,
-								}))}
-							/>
-						</div>
+						<Report
+							onDelete={handleDeleteItem}
+							reportData={reportData.map((data) => ({
+								reportId: data.reportId,
+								description: data.description,
+								date: new Date(data.date),
+								location: data.location,
+								pax: data.pax,
+								price: data.price,
+								expense1: data.expense1,
+								expense2: data.expense2,
+								expense3: data.expense3,
+								expense4: data.expense4,
+								expense5: data.expense5,
+								payment: data.payment,
+								total: data.total,
+							}))}
+						/>
 					</div>
 				</div>
 			</div>
