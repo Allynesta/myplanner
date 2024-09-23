@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import DataForm from "./DataForm"; // Import the DataForm component
-import Modal from "react-modal"; // Import Modal from react-modal
+import React, { useState } from "react";
+import DataForm from "./DataForm"; // Assuming the DataForm component is for editing
+import Modal from "react-modal";
 import "../styles/reportitem.css";
 
-// Ensure app element is set for accessibility
 Modal.setAppElement("#root");
 
 interface ReportData {
@@ -29,20 +28,8 @@ interface Props {
 }
 
 const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
+	const [isExpanded, setIsExpanded] = useState(false); // For accordion-like behavior
 	const [isEditing, setIsEditing] = useState(false);
-
-	// Disable scroll when modal is open
-	useEffect(() => {
-		if (isEditing) {
-			document.body.style.overflow = "hidden";
-		} else {
-			document.body.style.overflow = "auto";
-		}
-		// Clean up to reset scroll style when component unmounts
-		return () => {
-			document.body.style.overflow = "auto";
-		};
-	}, [isEditing]);
 
 	const handleDelete = () => {
 		if (window.confirm("Are you sure you want to delete this item?")) {
@@ -57,35 +44,44 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 
 	return (
 		<li>
-			<div className="section1">
-				<strong>Location:</strong> {data.location}
-				<br />
-				<strong>Date:</strong> {data.date.toDateString()}
-				<br />
-				<strong>Pax:</strong> {data.pax}
-				<br />
-				<strong>Price:</strong> {data.price}
-				<br />
-				<strong>Description:</strong> {data.description}
+			{/* Small Card (location only) */}
+			<div className="small-card" onClick={() => setIsExpanded(!isExpanded)}>
+				<strong>
+					{data.location} - {data.date.toDateString()}
+				</strong>
+				<span className="toggle-icon">{isExpanded ? " ▲ " : " ▼ "}</span>
 			</div>
-			<div className="section2">
-				<strong>Expenses:</strong>- Food & Bev: {data.expense1}
-				<br />- Fuel: {data.expense2}
-				<br />- Staff: {data.expense3}
-				<br />- Commission: {data.expense4}
-				<br />- Others: {data.expense5}
-				<br />
-			</div>
-			<div className="section3">
-				<strong>Total:</strong> {data.total}
-				<br />
-				<strong>Payment:</strong> {data.payment}
-			</div>
-			<br />
-			<div className="section4">
-				<button onClick={handleDelete}>Delete</button>
-				<button onClick={() => setIsEditing(true)}>Edit</button>
-			</div>
+
+			{/* Expanded view (visible only when clicked) */}
+			{isExpanded && (
+				<div className="expanded-card">
+					<div className="section1">
+						<strong>Pax:</strong> {data.pax}
+						<br />
+						<strong>Price:</strong> {data.price}
+						<br />
+						<strong>Description:</strong> {data.description}
+					</div>
+					<div className="section2">
+						<strong>Expenses:</strong>- Food & Bev: {data.expense1}
+						<br />- Fuel: {data.expense2}
+						<br />- Staff: {data.expense3}
+						<br />- Commission: {data.expense4}
+						<br />- Others: {data.expense5}
+						<br />
+					</div>
+					<div className="section3">
+						<strong>Total:</strong> {data.total}
+						<br />
+						<strong>Payment:</strong> {data.payment}
+					</div>
+					<br />
+					<div className="section4">
+						<button onClick={handleDelete}>Delete</button>
+						<button onClick={() => setIsEditing(true)}>Edit</button>
+					</div>
+				</div>
+			)}
 
 			{/* Modal for Editing */}
 			<Modal
@@ -110,7 +106,6 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 						payment: data.payment,
 					}}
 				/>
-				{/* Add a close button inside the modal */}
 				<button onClick={() => setIsEditing(false)} className="close-button">
 					Close
 				</button>
