@@ -7,8 +7,6 @@ const Home = () => {
 	const [username, setUsername] = useState<string | null>(null);
 	const [pastReportsCount, setPastReportsCount] = useState(0);
 	const [futureReportsCount, setFutureReportsCount] = useState(0);
-	const [totalIncome, setTotalIncome] = useState(0); // State for total income
-	const [totalExpense, setTotalExpense] = useState(0); // State for total expense
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
@@ -33,34 +31,6 @@ const Home = () => {
 
 					setPastReportsCount(pastReportsCount);
 					setFutureReportsCount(futureReportsCount);
-
-					// Calculate total income and expense for the current month
-					const currentMonth = now.getMonth();
-					const currentYear = now.getFullYear();
-
-					let totalIncomeForMonth = 0;
-					let totalExpenseForMonth = 0;
-
-					reports.forEach((report) => {
-						const reportDate = new Date(report.date);
-
-						// Check if the report is in the current month and year
-						if (
-							reportDate.getMonth() === currentMonth &&
-							reportDate.getFullYear() === currentYear
-						) {
-							totalIncomeForMonth += report.total; // Assuming 'total' is the income
-							totalExpenseForMonth +=
-								report.expense1 +
-								report.expense2 +
-								report.expense3 +
-								report.expense4 +
-								report.expense5; // Sum of all expenses
-						}
-					});
-
-					setTotalIncome(totalIncomeForMonth);
-					setTotalExpense(totalExpenseForMonth);
 				} catch (error) {
 					console.error("Error fetching user data:", error);
 					setError("Failed to load data. Please try again later.");
@@ -108,24 +78,14 @@ const Home = () => {
 				<ul>
 					<li>
 						<p className="mt-4 text-lg">
-							{pastReportsCount} report
-							{pastReportsCount !== 1 ? "s" : ""} in the past.
+							{pastReportsCount} report{pastReportsCount !== 1 ? "s" : ""} in
+							the past.
 						</p>
 					</li>
 					<li>
 						<p className="mt-4 text-lg">
-							{futureReportsCount} report
-							{futureReportsCount !== 1 ? "s" : ""} in the future.
-						</p>
-					</li>
-					<li>
-						<p className="mt-4 text-lg">
-							Total Profit for the Month: Rs {totalIncome}
-						</p>
-					</li>
-					<li>
-						<p className="mt-4 text-lg">
-							Total Expenses for the Month: Rs {totalExpense}
+							{futureReportsCount} report{futureReportsCount !== 1 ? "s" : ""}{" "}
+							in the future.
 						</p>
 					</li>
 				</ul>
@@ -138,8 +98,6 @@ const Home = () => {
 		username,
 		pastReportsCount,
 		futureReportsCount,
-		totalIncome,
-		totalExpense,
 	]);
 
 	return content;
