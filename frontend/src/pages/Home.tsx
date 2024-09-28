@@ -120,12 +120,12 @@ const Home = () => {
 					</li>
 					<li>
 						<p className="mt-4 text-lg">
-							Total Profit for the Month: Rs{totalIncome}
+							Total Profit for the Month: Rs {totalIncome}
 						</p>
 					</li>
 					<li>
 						<p className="mt-4 text-lg">
-							Total Expenses for the Month: Rs{totalExpense}
+							Total Expenses for the Month: Rs {totalExpense}
 						</p>
 					</li>
 				</ul>
