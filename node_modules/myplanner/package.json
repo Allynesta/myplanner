@@ -4,13 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-  "preview": "vite preview",
-  "start": "vite"
-}
-,
+    "dev": "vite",
+    "build": "npx vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "start": "vite"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
@@ -45,6 +44,6 @@
     "eslint-plugin-react-refresh": "^0.4.7",
     "rollup": "^4.20.0",
     "typescript": "^5.2.2",
-    "vite": "^5.3.1"
+    "vite": "^5.4.10"
   }
 }
