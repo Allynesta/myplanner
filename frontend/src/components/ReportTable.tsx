@@ -10,7 +10,12 @@ interface ReportData {
 	date: Date;
 	pax: number;
 	price: number;
-
+	expense1: number;
+	expense2: number;
+	expense3: number;
+	expense4: number;
+	expense5: number;
+	payment: string;
 	total: number;
 }
 
@@ -23,6 +28,7 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 	const [, setReportData] = useState<ReportData[]>([]);
 	const [showData, setShowData] = useState<ReportData[]>([]);
 	const [filter, setFilter] = useState<string>("All");
+	const [paymentFilter, setPaymentFilter] = useState<string>("All");
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -39,20 +45,34 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 	}, []);
 
 	useEffect(() => {
-		// Filter the data based on the selected filter value
-		if (filter === "All") {
-			setShowData(reportData);
-		} else {
-			setShowData(
-				reportData.filter((data) =>
-					data.location.toUpperCase().includes(filter.toUpperCase())
-				)
+		let filteredData = [...reportData];
+
+		// Apply location filter
+		if (filter !== "All") {
+			filteredData = filteredData.filter((data) =>
+				data.location.toUpperCase().includes(filter.toUpperCase())
 			);
 		}
-	}, [filter, reportData]);
+
+		// Apply payment filter
+		if (paymentFilter !== "All") {
+			filteredData = filteredData.filter(
+				(data) => data.payment === paymentFilter
+			);
+		}
+
+		setShowData(filteredData);
+	}, [filter, paymentFilter, reportData]);
 
 	const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		setFilter(event.target.value);
+	};
+
+	// Add a handler for changing the payment filter
+	const handlePaymentFilterChange = (
+		event: React.ChangeEvent<HTMLSelectElement>
+	) => {
+		setPaymentFilter(event.target.value);
 	};
 
 	const handleDeleteItem = async (reportId: number) => {
@@ -93,14 +113,19 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 				type="text"
 			/>
 
-			<div>
-				<select id="countriesDropdown" onChange={handleFilterChange}>
-					<option>All</option>
-					<option>Pieter</option>
-					<option>Morne</option>
-					<option>Cascade</option>
-				</select>
-			</div>
+			<select id="countriesDropdown" onChange={handleFilterChange}>
+				<option>All</option>
+				<option>Pieter</option>
+				<option>Morne</option>
+				<option>Cascade</option>
+			</select>
+
+			<select id="paymentDropdown" onChange={handlePaymentFilterChange}>
+				<option>All</option>
+				<option>Not paid</option>
+				<option>Paid by cash</option>
+				<option>Paid by juice</option>
+			</select>
 
 			<table id="myTable">
 				<thead>

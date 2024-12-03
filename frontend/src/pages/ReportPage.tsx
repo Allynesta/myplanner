@@ -15,6 +15,7 @@ interface ReportData {
 	expense3: number;
 	expense4: number;
 	expense5: number;
+	payment: string;
 	total: number;
 }
 
@@ -68,7 +69,13 @@ const ReportPage: React.FC<Props> = ({ onDelete }) => {
 					date: new Date(data.date),
 					location: data.location,
 					pax: data.pax,
+					expense1: data.expense1,
+					expense2: data.expense2,
+					expense3: data.expense3,
+					expense4: data.expense4,
+					expense5: data.expense5,
 					price: data.price,
+					payment: data.payment,
 					total: data.total,
 				}))}
 				onDelete={handleDeleteItem}
