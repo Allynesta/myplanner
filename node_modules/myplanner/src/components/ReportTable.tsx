@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
+import * as XLSX from "xlsx"; // Import the library
 import "../styles/reporttable.css";
 import { fetchReports, deleteReport } from "../services/authService"; // Import the deleteReport function
 
-// Define the structure of the data each report will have
 interface ReportData {
 	reportId: number;
 	location: string;
@@ -35,26 +35,23 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 			try {
 				const data = await fetchReports();
 				setReportData(data);
-				setShowData(data); // Set initial data
+				setShowData(data);
 			} catch (error) {
 				console.error("Error fetching reports:", error);
 			}
 		};
-
 		fetchData();
 	}, []);
 
 	useEffect(() => {
 		let filteredData = [...reportData];
 
-		// Apply location filter
 		if (filter !== "All") {
 			filteredData = filteredData.filter((data) =>
 				data.location.toUpperCase().includes(filter.toUpperCase())
 			);
 		}
 
-		// Apply payment filter
 		if (paymentFilter !== "All") {
 			filteredData = filteredData.filter(
 				(data) => data.payment === paymentFilter
@@ -68,7 +65,6 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 		setFilter(event.target.value);
 	};
 
-	// Add a handler for changing the payment filter
 	const handlePaymentFilterChange = (
 		event: React.ChangeEvent<HTMLSelectElement>
 	) => {
@@ -78,14 +74,13 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 	const handleDeleteItem = async (reportId: number) => {
 		if (window.confirm("Are you sure you want to delete this item?")) {
 			try {
-				console.log(`Attempting to delete report with ID: ${reportId}`); // Log the id being deleted
-				await deleteReport(reportId); // Call the delete function
+				await deleteReport(reportId);
 				const updatedReportData = showData.filter(
 					(data) => data.reportId !== reportId
 				);
 				setShowData(updatedReportData);
-				setReportData(updatedReportData); // Update the full dataset
-				onDelete(reportId); // Notify parent component of the deletion
+				setReportData(updatedReportData);
+				onDelete(reportId);
 			} catch (error) {
 				console.error("Error deleting report:", error);
 			}
@@ -102,40 +97,68 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 		setShowData(filteredData);
 	};
 
+	const handleExportToExcel = () => {
+		const formattedData = showData.map((report) => ({
+			Location: report.location,
+			Description: report.description,
+			Date: new Date(report.date).toLocaleDateString(),
+			Pax: report.pax,
+			Price: report.price,
+			"Food & Bev": report.expense1,
+			Fuel: report.expense2,
+			Staff: report.expense3,
+			Commission: report.expense4,
+			Others: report.expense5,
+			Payment: report.payment,
+			Total: report.total,
+		}));
+
+		const worksheet = XLSX.utils.json_to_sheet(formattedData);
+		const workbook = XLSX.utils.book_new();
+		XLSX.utils.book_append_sheet(workbook, worksheet, "Reports");
+		XLSX.writeFile(workbook, "reports.xlsx");
+	};
+
 	return (
-		<div>
-			<h2>Report Table</h2>
+		<div className="table-container">
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "center",
+				}}
+			>
+				<h2>Report Table</h2>
+				<button onClick={handleExportToExcel}>Export to Excel</button>
+			</div>
 			<input
 				id="myInput"
 				onKeyUp={filterByLocation}
-				placeholder="Search for locations.."
+				placeholder="Search for locations..."
 				title="Type in a location"
 				type="text"
 			/>
-
 			<select id="countriesDropdown" onChange={handleFilterChange}>
 				<option>All</option>
 				<option>Pieter</option>
 				<option>Morne</option>
 				<option>Cascade</option>
 			</select>
-
 			<select id="paymentDropdown" onChange={handlePaymentFilterChange}>
 				<option>All</option>
 				<option>Not paid</option>
 				<option>Paid by cash</option>
 				<option>Paid by juice</option>
 			</select>
-
 			<table id="myTable">
 				<thead>
 					<tr className="header">
-						<th style={{ width: "25%" }}>Location</th>
-						<th style={{ width: "25%" }}>Date</th>
-						<th style={{ width: "15%" }}>Pax</th>
-						<th style={{ width: "20%" }}>Price</th>
-						<th style={{ width: "20%" }}>Total</th>
-						<th style={{ width: "15%" }}></th>
+						<th>Location</th>
+						<th>Date</th>
+						<th>Pax</th>
+						<th>Price</th>
+						<th>Total</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
