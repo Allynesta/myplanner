@@ -71,7 +71,7 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 						<br />
 					</div>
 					<div className="section3">
-						<strong>Total:</strong> {data.total}
+						<strong>Profit:</strong> {data.total}
 						<br />
 						<strong>Payment:</strong> {data.payment}
 					</div>

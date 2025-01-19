@@ -145,7 +145,7 @@ const Home = () => {
 						>
 							<option value="">All Years</option>
 							{/* Assuming years from 2020 to current year */}
-							{Array.from({ length: 5 }, (_, i) => (
+							{Array.from({ length: 6 }, (_, i) => (
 								<option key={i} value={2020 + i}>
 									{2020 + i}
 								</option>
@@ -180,6 +180,12 @@ const Home = () => {
 							</li>
 							<li>
 								<p className="total-label">Total Income for the Month:</p>
+								<span className="total-value">
+									Rs {totalIncome + totalExpense}
+								</span>
+							</li>
+							<li>
+								<p className="total-label">Total Profit for the Month:</p>
 								<span className="total-value">Rs {totalIncome}</span>
 							</li>
 							<li>

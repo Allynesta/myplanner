@@ -251,7 +251,7 @@ const Dashboard: React.FC<Props> = () => {
 							<br />- Others: {selectedReport.expense5}
 						</div>
 						<div>
-							<span>Total:</span> {selectedReport.total}
+							<span>Profit:</span> {selectedReport.total}
 						</div>
 						<div>
 							<span>Payment:</span> {selectedReport.payment}

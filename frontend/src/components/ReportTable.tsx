@@ -157,7 +157,7 @@ const ReportTable: React.FC<Props> = ({ reportData, onDelete }) => {
 						<th>Date</th>
 						<th>Pax</th>
 						<th>Price</th>
-						<th>Total</th>
+						<th>Profit</th>
 						<th></th>
 					</tr>
 				</thead>
