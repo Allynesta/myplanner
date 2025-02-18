@@ -2,7 +2,13 @@ import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "../AuthContext";
 import { fetchReports, fetchUsername } from "../services/authService";
 import "../styles/home.css";
-
+// Helper function to get the week number of a date
+const getWeekNumber = (date: Date) => {
+	const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+	const pastDaysOfYear =
+		(date.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000);
+	return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+};
 const Home = () => {
 	const { isAuthenticated } = useAuth();
 	const [username, setUsername] = useState<string | null>(null);
@@ -13,10 +19,18 @@ const Home = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
+	// Get current date details
+	const now = new Date();
+	const currentMonth = now.getMonth(); // Month (0-based index)
+	const currentYear = now.getFullYear(); // Year
+	const currentWeek = getWeekNumber(now); // Week number using the helper function
+
 	// State for filtering by month, year, and week
-	const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
-	const [selectedYear, setSelectedYear] = useState<number | null>(null);
-	const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+	const [selectedMonth, setSelectedMonth] = useState<number | null>(
+		currentMonth
+	);
+	const [selectedYear, setSelectedYear] = useState<number | null>(currentYear);
+	const [selectedWeek, setSelectedWeek] = useState<number | null>(currentWeek);
 
 	useEffect(() => {
 		const fetchUserData = async () => {
@@ -83,14 +97,6 @@ const Home = () => {
 
 		fetchUserData();
 	}, [isAuthenticated, selectedMonth, selectedYear, selectedWeek]);
-
-	// Helper function to get the week number of a date
-	const getWeekNumber = (date: Date) => {
-		const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-		const pastDaysOfYear =
-			(date.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000);
-		return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-	};
 
 	const content = useMemo(() => {
 		if (loading) {
