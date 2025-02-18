@@ -2,13 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "../AuthContext";
 import { fetchReports, fetchUsername } from "../services/authService";
 import "../styles/home.css";
-// Helper function to get the week number of a date
-const getWeekNumber = (date: Date) => {
-	const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-	const pastDaysOfYear =
-		(date.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000);
-	return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-};
+
 const Home = () => {
 	const { isAuthenticated } = useAuth();
 	const [username, setUsername] = useState<string | null>(null);
@@ -23,14 +17,12 @@ const Home = () => {
 	const now = new Date();
 	const currentMonth = now.getMonth(); // Month (0-based index)
 	const currentYear = now.getFullYear(); // Year
-	const currentWeek = getWeekNumber(now); // Week number using the helper function
 
 	// State for filtering by month, year, and week
 	const [selectedMonth, setSelectedMonth] = useState<number | null>(
 		currentMonth
 	);
 	const [selectedYear, setSelectedYear] = useState<number | null>(currentYear);
-	const [selectedWeek, setSelectedWeek] = useState<number | null>(currentWeek);
 
 	useEffect(() => {
 		const fetchUserData = async () => {
@@ -50,10 +42,8 @@ const Home = () => {
 						const isInYear =
 							selectedYear === null ||
 							reportDate.getFullYear() === selectedYear;
-						const isInWeek =
-							selectedWeek === null ||
-							getWeekNumber(reportDate) === selectedWeek; // Helper function to get week number
-						return isInMonth && isInYear && isInWeek;
+
+						return isInMonth && isInYear;
 					});
 
 					// Calculate past and future reports
@@ -96,7 +86,7 @@ const Home = () => {
 		};
 
 		fetchUserData();
-	}, [isAuthenticated, selectedMonth, selectedYear, selectedWeek]);
+	}, [isAuthenticated, selectedMonth, selectedYear]);
 
 	const content = useMemo(() => {
 		if (loading) {
@@ -157,19 +147,6 @@ const Home = () => {
 								</option>
 							))}
 						</select>
-
-						<select
-							value={selectedWeek ?? ""}
-							onChange={(e) => setSelectedWeek(Number(e.target.value) || null)}
-							className="mr-2"
-						>
-							<option value="">All Weeks</option>
-							{Array.from({ length: 52 }, (_, i) => (
-								<option key={i} value={i + 1}>
-									Week {i + 1}
-								</option>
-							))}
-						</select>
 					</div>
 				</div>
 
@@ -214,7 +191,6 @@ const Home = () => {
 		totalExpense,
 		selectedMonth,
 		selectedYear,
-		selectedWeek,
 	]);
 
 	return content;
