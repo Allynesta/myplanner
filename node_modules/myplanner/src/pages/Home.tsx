@@ -13,12 +13,10 @@ const Home = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	// Get current date details
 	const now = new Date();
-	const currentMonth = now.getMonth(); // Month (0-based index)
-	const currentYear = now.getFullYear(); // Year
+	const currentMonth = now.getMonth();
+	const currentYear = now.getFullYear();
 
-	// State for filtering by month, year, and week
 	const [selectedMonth, setSelectedMonth] = useState<number | null>(
 		currentMonth
 	);
@@ -34,7 +32,6 @@ const Home = () => {
 					const reports = await fetchReports();
 					const now = new Date();
 
-					// Filter reports based on selected month, year, or week
 					const filteredReports = reports.filter((report) => {
 						const reportDate = new Date(report.date);
 						const isInMonth =
@@ -42,29 +39,24 @@ const Home = () => {
 						const isInYear =
 							selectedYear === null ||
 							reportDate.getFullYear() === selectedYear;
-
 						return isInMonth && isInYear;
 					});
 
-					// Calculate past and future reports
-					const pastReportsCount = filteredReports.filter(
-						(report) => new Date(report.date) < now
-					).length;
+					setPastReportsCount(
+						filteredReports.filter((report) => new Date(report.date) < now)
+							.length
+					);
+					setFutureReportsCount(
+						filteredReports.filter((report) => new Date(report.date) >= now)
+							.length
+					);
 
-					const futureReportsCount = filteredReports.filter(
-						(report) => new Date(report.date) >= now
-					).length;
-
-					setPastReportsCount(pastReportsCount);
-					setFutureReportsCount(futureReportsCount);
-
-					// Calculate total income and expense
-					let totalIncomeForSelectedPeriod = 0;
-					let totalExpenseForSelectedPeriod = 0;
+					let income = 0;
+					let expense = 0;
 
 					filteredReports.forEach((report) => {
-						totalIncomeForSelectedPeriod += report.total;
-						totalExpenseForSelectedPeriod +=
+						income += report.total;
+						expense +=
 							report.expense1 +
 							report.expense2 +
 							report.expense3 +
@@ -72,8 +64,8 @@ const Home = () => {
 							report.expense5;
 					});
 
-					setTotalIncome(totalIncomeForSelectedPeriod);
-					setTotalExpense(totalExpenseForSelectedPeriod);
+					setTotalIncome(income);
+					setTotalExpense(expense);
 				} catch (error) {
 					console.error("Error fetching user data:", error);
 					setError("Failed to load data. Please try again later.");
@@ -90,41 +82,25 @@ const Home = () => {
 
 	const content = useMemo(() => {
 		if (loading) {
-			return (
-				<div className="grid h-screen place-content-center bg-white px-4">
-					<p>Loading...</p>
-				</div>
-			);
+			return <p className="loading">Loading...</p>;
 		}
 
 		if (error) {
-			return (
-				<div className="grid h-screen place-content-center bg-white px-4">
-					<p className="text-red-500">{error}</p>
-				</div>
-			);
+			return <p className="error-message">{error}</p>;
 		}
 
 		if (!isAuthenticated) {
-			return (
-				<div className="grid h-screen place-content-center bg-white px-4">
-					<h1 className="uppercase tracking-widest text-gray-500">
-						404 | My Planner
-					</h1>
-				</div>
-			);
+			return <h1 className="not-found">404 | My Planner</h1>;
 		}
 
 		return (
-			<div className="grid h-screen place-content-center bg-white px-4">
-				<h1 className="text-2xl font-semibold">Welcome, {username}!</h1>
-				<div className="container">
-					<div className="mt-4">
-						{/* Filters */}
+			<div className="dashboard-wrapper">
+				<header className="dashboard-header">
+					<h1>Welcome, {username}!</h1>
+					<div className="filters">
 						<select
 							value={selectedMonth ?? ""}
 							onChange={(e) => setSelectedMonth(Number(e.target.value) || null)}
-							className="mr-2"
 						>
 							<option value="">All Months</option>
 							{Array.from({ length: 12 }, (_, i) => (
@@ -137,10 +113,8 @@ const Home = () => {
 						<select
 							value={selectedYear ?? ""}
 							onChange={(e) => setSelectedYear(Number(e.target.value) || null)}
-							className="mr-2"
 						>
 							<option value="">All Years</option>
-							{/* Assuming years from 2020 to current year */}
 							{Array.from({ length: 6 }, (_, i) => (
 								<option key={i} value={2020 + i}>
 									{2020 + i}
@@ -148,9 +122,9 @@ const Home = () => {
 							))}
 						</select>
 					</div>
-				</div>
+				</header>
 
-				<div className="container">
+				<div className="dashboard-content">
 					<div className="card">
 						<ul>
 							<li>
