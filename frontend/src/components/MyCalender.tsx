@@ -1,32 +1,42 @@
-import { useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import "../styles/calender.css"; // Assuming the CSS file is named "calender.css"
+/**
+ * Calender Component
+ *
+ * This component provides an inline date picker using react-datepicker.
+ * It allows the user to select a future date. If the selected date is not in the future,
+ * an error message is shown. The valid selected date is passed to the parent via the `onSelect` callback.
+ */
 
+import { useState } from "react";
+import DatePicker from "react-datepicker"; // Date picker component
+import "react-datepicker/dist/react-datepicker.css"; // Styles for the date picker
+import "../styles/calender.css"; // Custom calendar styles
+
+// Props type definition
 interface Props {
-	onSelect: (date: Date) => void;
+	onSelect: (date: Date) => void; // Callback to send the selected date to the parent
 }
 
 const Calender: React.FC<Props> = ({ onSelect }) => {
-	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-	const [error, setError] = useState<string | null>(null);
+	const [selectedDate, setSelectedDate] = useState<Date | null>(null); // State to track selected date
+	const [error, setError] = useState<string | null>(null); // State to handle validation error
 
-	// Function to check if the date is in the future
+	// Helper function to check if selected date is in the future
 	const isFutureDate = (date: Date) => new Date() < date;
 
+	// Handle change in selected date
 	const handleDateChange = (date: Date | null) => {
 		setSelectedDate(date);
 
 		if (date) {
 			if (isFutureDate(date)) {
-				setError(null); // Clear error if date is valid
-				onSelect(date); // Call onSelect with the selected date if valid
+				setError(null); // Valid date, clear error
+				onSelect(date); // Trigger callback with selected date
 			} else {
-				setError("Selected date must be in the future."); // Set error if date is not valid
-				setSelectedDate(null); // Clear the selected date if invalid
+				setError("Selected date must be in the future."); // Invalid date error
+				setSelectedDate(null); // Clear invalid date
 			}
 		} else {
-			setError("Date selection is required.");
+			setError("Date selection is required."); // Null date error
 		}
 	};
 
