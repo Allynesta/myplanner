@@ -55,54 +55,77 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 	};
 
 	return (
-		<li>
-			{/* Small Card View (click to expand) */}
-			<div className="small-card" onClick={() => setIsExpanded(!isExpanded)}>
-				<strong>
+		<li className="mb-4">
+			{/* Small card */}
+			<div
+				className="bg-white shadow-md rounded-md p-4 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition"
+				onClick={() => setIsExpanded(!isExpanded)}
+			>
+				<strong className="text-gray-800">
 					{data.location} - {data.date.toDateString()}
 				</strong>
-				<span className="toggle-icon">{isExpanded ? " ▲ " : " ▼ "}</span>
+				<span className="text-gray-500">{isExpanded ? "▲" : "▼"}</span>
 			</div>
 
-			{/* Expanded Card View */}
+			{/* Expanded card */}
 			{isExpanded && (
-				<div className="expanded-card">
-					<div className="section1">
-						<strong>Pax:</strong> {data.pax}
-						<br />
-						<strong>Price:</strong> {data.price}
-						<br />
-						<strong>Description:</strong> {data.description}
+				<div className="bg-gray-50 border border-gray-200 rounded-md p-4 mt-2 space-y-3">
+					<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-gray-700">
+						<div>
+							<p>
+								<strong>Pax:</strong> {data.pax}
+							</p>
+							<p>
+								<strong>Price:</strong> {data.price}
+							</p>
+							<p>
+								<strong>Description:</strong> {data.description}
+							</p>
+						</div>
+						<div>
+							<p>
+								<strong>Expenses:</strong>
+							</p>
+							<p>- Food & Bev: {data.expense1}</p>
+							<p>- Fuel: {data.expense2}</p>
+							<p>- Staff: {data.expense3}</p>
+							<p>- Commission: {data.expense4}</p>
+							<p>- Others: {data.expense5}</p>
+						</div>
+						<div>
+							<p>
+								<strong>Profit:</strong> {data.total}
+							</p>
+							<p>
+								<strong>Payment:</strong> {data.payment}
+							</p>
+						</div>
 					</div>
-					<div className="section2">
-						<strong>Expenses:</strong>
-						<br />- Food & Bev: {data.expense1}
-						<br />- Fuel: {data.expense2}
-						<br />- Staff: {data.expense3}
-						<br />- Commission: {data.expense4}
-						<br />- Others: {data.expense5}
-					</div>
-					<div className="section3">
-						<strong>Profit:</strong> {data.total}
-						<br />
-						<strong>Payment:</strong> {data.payment}
-					</div>
-					<br />
-					<div className="section4">
-						<button onClick={handleDelete}>Delete</button>
-						<button onClick={() => setIsEditing(true)}>Edit</button>
+
+					<div className="flex gap-2 mt-3">
+						<button
+							onClick={handleDelete}
+							className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+						>
+							Delete
+						</button>
+						<button
+							onClick={() => setIsEditing(true)}
+							className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+						>
+							Edit
+						</button>
 					</div>
 				</div>
 			)}
 
-			{/* Edit Modal */}
+			{/* Modal for editing */}
 			<Modal
 				isOpen={isEditing}
 				onRequestClose={() => setIsEditing(false)}
-				className="modal-content"
-				overlayClassName="modal-overlay"
+				className="absolute top-1/2 left-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-lg p-6 outline-none"
+				overlayClassName="fixed inset-0 bg-black/50 z-50"
 			>
-				{/* Pass initial values and submit handler to DataForm */}
 				<DataForm
 					onSubmit={handleEdit}
 					selectedDate={data.date}
@@ -119,7 +142,10 @@ const ReportItem: React.FC<Props> = ({ data, onDelete, onEdit }) => {
 						payment: data.payment,
 					}}
 				/>
-				<button onClick={() => setIsEditing(false)} className="close-button">
+				<button
+					onClick={() => setIsEditing(false)}
+					className="mt-4 bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500 transition"
+				>
 					Close
 				</button>
 			</Modal>

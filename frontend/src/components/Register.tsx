@@ -9,7 +9,7 @@
 import React, { useState } from "react";
 import { register } from "../services/authService"; // Function to send registration request to backend
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/auth.css"; // Shared CSS for authentication pages
 
 const Register: React.FC = () => {
@@ -79,6 +79,12 @@ const Register: React.FC = () => {
 					Register
 				</button>
 			</form>
+
+			<Link to="/login" className="hover:text-blue-400">
+				<a className="btn-submit" type="submit">
+					Login
+				</a>
+			</Link>
 		</div>
 	);
 };

@@ -53,6 +53,42 @@ app.post('/login', async (req, res) => {
     res.send({ token });
 });
 
+// Add near other routes in server.js (after login route)
+app.post('/change-password', async (req, res) => {
+    const { username, currentPassword, newPassword } = req.body;
+
+    if (!username || !currentPassword || !newPassword) {
+        return res.status(400).json({ message: 'username, currentPassword and newPassword are required' });
+    }
+
+    if (typeof newPassword !== 'string' || newPassword.length < 8) {
+        return res.status(400).json({ message: 'New password must be at least 8 characters' });
+    }
+
+    try {
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid username or password' });
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid username or password' });
+        }
+
+        const hashed = await bcrypt.hash(newPassword, 10);
+        user.password = hashed;
+        await user.save();
+
+        return res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+});
+
+
+
 // Authentication middleware
 const authenticateToken = (req, res, next) => {
     const token = req.headers['authorization'];

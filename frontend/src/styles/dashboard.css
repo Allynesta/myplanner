@@ -1,88 +1,98 @@
 /* Updated Modal Content Styling */
 .ReactModal__Content {
-  height: 60vh;
-  max-width: 500px;
-  margin: auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow-y: auto;
+	height: 60vh;
+	max-width: 500px;
+	margin: auto;
+	padding: 20px;
+	background-color: #fff;
+	border-radius: 8px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	position: relative;
+	overflow-y: auto;
 }
 
 button {
-  background-color: #6f876f;
-  border: none;
-  padding: 10px 15px;
-  margin: 5px 0;
-  border-radius: 5px;
-  color: #fff;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+	background-color: #6f876f;
+	border: none;
+	padding: 10px 15px;
+	margin: 5px 0;
+	border-radius: 5px;
+	color: #fff;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #556b55;
+	background-color: #556b55;
 }
 
 button:active {
-  background-color: #a5c1a5;
+	background-color: #a5c1a5;
 }
 
 .indicator {
-  background-color: #22a822;
-  padding: 5px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  margin: 10px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+	background-color: #22a822;
+	padding: 5px;
+	border-radius: 10px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	margin: 10px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .report-item {
-  cursor: pointer;
-  padding: 5px;
-  border-bottom: 1px solid #ccc;
+	cursor: pointer;
+	padding: 5px;
+	border-bottom: 1px solid #ccc;
 }
 
 .report-item:hover {
-  background-color: #f0f0f0;
+	background-color: #f0f0f0;
 }
 
 .react-calendar {
-  width: 100%;
-  max-width: 100%;
+	width: 100%;
+	max-width: 100%;
 }
 
 .react-calendar__month-view__weekdays {
-  background-color: #000;
-  color: #fff;
-  padding: 10px;
-  font-weight: bold;
+	background-color: #000;
+	color: #fff;
+	padding: 10px;
+	font-weight: bold;
 }
 
 .react-calendar__month-view__days__day--weekend {
-  color: #a52020;
+	color: #a52020;
 }
 
 .react-calendar__tile--active {
-  background-color: #4a90e2;
-  color: white;
+	background-color: #4a90e2;
+	color: white;
 }
-
 
 /* Dashboard Styles */
-.dashboard-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+
+.dashboard {
+	padding: 2rem;
+	font-family: Arial, sans-serif;
 }
 
+.dashboard-container {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
 
 .section {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+}
+
+.calendar {
+	width: 100%;
+	max-width: 500px;
+	margin: 0 auto 2rem;
 }

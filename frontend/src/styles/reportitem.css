@@ -1,43 +1,53 @@
+/* Flex layout for report details inside modals */
 .section3 {
-    display: flex;
-    justify-content: space-evenly;
+	display: flex;
+	justify-content: space-evenly;
+	margin-top: 10px;
 }
 
 .section4 {
-    display: flex;
-    justify-content: space-evenly;
+	display: flex;
+	justify-content: space-evenly;
+	margin-top: 10px;
 }
 
-/* Modal Styles */
+/* Modal overlay */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.75);
-    z-index: 1000;
-  }
-  
-  .modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    width: 75%;
-    z-index: 1001;
-  }
-  
-  .close-button {
-    background-color: #ff5a5a;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.75);
+	z-index: 1000;
+}
+
+/* Modal content */
+.modal-content {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	padding: 20px;
+	border-radius: 8px;
+	width: 75%;
+	max-width: 500px;
+	z-index: 1001;
+	overflow-y: auto;
+}
+
+/* Close button */
+.close-button {
+	background-color: #ff5a5a;
+	color: white;
+	border: none;
+	padding: 10px 15px;
+	border-radius: 5px;
+	cursor: pointer;
+	margin-top: 10px;
+}
+
+.close-button:hover {
+	background-color: #e04848;
+}

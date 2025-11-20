@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "../AuthContext";
 import { fetchReports, fetchUsername } from "../services/authService";
-import "../styles/home.css";
 
 const Home = () => {
 	const { isAuthenticated } = useAuth();
@@ -30,8 +29,6 @@ const Home = () => {
 					setUsername(fetchedUsername);
 
 					const reports = await fetchReports();
-					const now = new Date();
-
 					const filteredReports = reports.filter((report) => {
 						const reportDate = new Date(report.date);
 						const isInMonth =
@@ -53,7 +50,6 @@ const Home = () => {
 
 					let income = 0;
 					let expense = 0;
-
 					filteredReports.forEach((report) => {
 						income += report.total;
 						expense +=
@@ -63,11 +59,10 @@ const Home = () => {
 							report.expense4 +
 							report.expense5;
 					});
-
 					setTotalIncome(income);
 					setTotalExpense(expense);
 				} catch (error) {
-					console.error("Error fetching user data:", error);
+					console.error(error);
 					setError("Failed to load data. Please try again later.");
 				} finally {
 					setLoading(false);
@@ -82,30 +77,49 @@ const Home = () => {
 
 	const content = useMemo(() => {
 		if (loading) {
-			return <p className="loading">Loading...</p>;
+			return (
+				<div className="flex justify-center items-center h-screen">
+					<p className="text-gray-500 text-lg animate-pulse">Loading...</p>
+				</div>
+			);
 		}
 
 		if (error) {
-			return <p className="error-message">{error}</p>;
+			return (
+				<div className="flex justify-center items-center h-screen">
+					<p className="text-red-500 text-lg">{error}</p>
+				</div>
+			);
 		}
 
 		if (!isAuthenticated) {
-			return <h1 className="not-found">404 | My Planner</h1>;
+			return (
+				<div className="flex justify-center items-center h-screen">
+					<h1 className="text-3xl font-bold text-gray-700">404 | My Planner</h1>
+				</div>
+			);
 		}
 
 		return (
-			<div className="dashboard-wrapper">
-				<header className="dashboard-header">
-					<h1>Welcome, {username}!</h1>
-					<div className="filters">
+			<div className="max-w-7xl mx-auto p-4">
+				{/* Header */}
+				<div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+					<h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-0">
+						Welcome, {username}!
+					</h1>
+
+					<div className="flex gap-4">
 						<select
 							value={selectedMonth ?? ""}
 							onChange={(e) => setSelectedMonth(Number(e.target.value) || null)}
+							className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
 						>
 							<option value="">All Months</option>
 							{Array.from({ length: 12 }, (_, i) => (
 								<option key={i} value={i}>
-									{new Date(0, i).toLocaleString("default", { month: "long" })}
+									{new Date(0, i).toLocaleString("default", {
+										month: "long",
+									})}
 								</option>
 							))}
 						</select>
@@ -113,6 +127,7 @@ const Home = () => {
 						<select
 							value={selectedYear ?? ""}
 							onChange={(e) => setSelectedYear(Number(e.target.value) || null)}
+							className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
 						>
 							<option value="">All Years</option>
 							{Array.from({ length: 6 }, (_, i) => (
@@ -122,34 +137,49 @@ const Home = () => {
 							))}
 						</select>
 					</div>
-				</header>
+				</div>
 
-				<div className="dashboard-content">
-					<div className="card">
-						<ul>
-							<li>
-								<p className="total-label">Reports in the past:</p>
-								<span className="total-value">{pastReportsCount}</span>
-							</li>
-							<li>
-								<p className="total-label">Reports in the future:</p>
-								<span className="total-value">{futureReportsCount}</span>
-							</li>
-							<li>
-								<p className="total-label">Total Income for the Month:</p>
-								<span className="total-value">
-									Rs {totalIncome + totalExpense}
-								</span>
-							</li>
-							<li>
-								<p className="total-label">Total Profit for the Month:</p>
-								<span className="total-value">Rs {totalIncome}</span>
-							</li>
-							<li>
-								<p className="total-label">Total Expenses for the Month:</p>
-								<span className="total-value">Rs {totalExpense}</span>
-							</li>
-						</ul>
+				{/* Dashboard Cards */}
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+					<div className="bg-white shadow rounded-lg p-6 border border-gray-200">
+						<p className="text-gray-500 font-medium">Reports in the past</p>
+						<span className="text-2xl font-bold text-gray-800">
+							{pastReportsCount}
+						</span>
+					</div>
+
+					<div className="bg-white shadow rounded-lg p-6 border border-gray-200">
+						<p className="text-gray-500 font-medium">Reports in the future</p>
+						<span className="text-2xl font-bold text-gray-800">
+							{futureReportsCount}
+						</span>
+					</div>
+
+					<div className="bg-white shadow rounded-lg p-6 border border-gray-200">
+						<p className="text-gray-500 font-medium">
+							Total Income for the Month
+						</p>
+						<span className="text-2xl font-bold text-green-600">
+							Rs {totalIncome + totalExpense}
+						</span>
+					</div>
+
+					<div className="bg-white shadow rounded-lg p-6 border border-gray-200">
+						<p className="text-gray-500 font-medium">
+							Total Profit for the Month
+						</p>
+						<span className="text-2xl font-bold text-blue-600">
+							Rs {totalIncome}
+						</span>
+					</div>
+
+					<div className="bg-white shadow rounded-lg p-6 border border-gray-200">
+						<p className="text-gray-500 font-medium">
+							Total Expenses for the Month
+						</p>
+						<span className="text-2xl font-bold text-red-600">
+							Rs {totalExpense}
+						</span>
 					</div>
 				</div>
 			</div>

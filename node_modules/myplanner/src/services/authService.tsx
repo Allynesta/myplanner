@@ -132,3 +132,22 @@ export const updateReport = async (
 		throw error;
 	}
 };
+
+// Add near other auth functions:
+export const changePassword = async (
+	username: string,
+	currentPassword: string,
+	newPassword: string
+) => {
+	try {
+		const response = await axios.post(`${API_URL}/change-password`, {
+			username,
+			currentPassword,
+			newPassword,
+		});
+		return response;
+	} catch (error) {
+		console.error("Error changing password:", error);
+		throw error;
+	}
+};
