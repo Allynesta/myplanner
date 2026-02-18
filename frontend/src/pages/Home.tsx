@@ -1,203 +1,210 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../AuthContext";
 import { fetchReports, fetchUsername } from "../services/authService";
+import {
+	LineChart,
+	Line,
+	XAxis,
+	YAxis,
+	CartesianGrid,
+	Tooltip,
+	ResponsiveContainer,
+} from "recharts";
+
+type Report = {
+	date: string;
+	total: number;
+	expense1: number;
+	expense2: number;
+	expense3: number;
+	expense4: number;
+	expense5: number;
+};
 
 const Home = () => {
 	const { isAuthenticated } = useAuth();
+
 	const [username, setUsername] = useState<string | null>(null);
-	const [pastReportsCount, setPastReportsCount] = useState(0);
-	const [futureReportsCount, setFutureReportsCount] = useState(0);
-	const [totalIncome, setTotalIncome] = useState(0);
-	const [totalExpense, setTotalExpense] = useState(0);
+	const [reports, setReports] = useState<Report[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const now = new Date();
-	const currentMonth = now.getMonth();
-	const currentYear = now.getFullYear();
+	const [rangeDays, setRangeDays] = useState<30 | 60 | 90>(30);
 
-	const [selectedMonth, setSelectedMonth] = useState<number | null>(
-		currentMonth
-	);
-	const [selectedYear, setSelectedYear] = useState<number | null>(currentYear);
-
+	// Fetch once
 	useEffect(() => {
-		const fetchUserData = async () => {
-			if (isAuthenticated) {
-				try {
-					const fetchedUsername = await fetchUsername();
-					setUsername(fetchedUsername);
+		const fetchData = async () => {
+			if (!isAuthenticated) return;
 
-					const reports = await fetchReports();
-					const filteredReports = reports.filter((report) => {
-						const reportDate = new Date(report.date);
-						const isInMonth =
-							selectedMonth === null || reportDate.getMonth() === selectedMonth;
-						const isInYear =
-							selectedYear === null ||
-							reportDate.getFullYear() === selectedYear;
-						return isInMonth && isInYear;
-					});
+			try {
+				setLoading(true);
+				const name = await fetchUsername();
+				setUsername(name);
 
-					setPastReportsCount(
-						filteredReports.filter((report) => new Date(report.date) < now)
-							.length
-					);
-					setFutureReportsCount(
-						filteredReports.filter((report) => new Date(report.date) >= now)
-							.length
-					);
-
-					let income = 0;
-					let expense = 0;
-					filteredReports.forEach((report) => {
-						income += report.total;
-						expense +=
-							report.expense1 +
-							report.expense2 +
-							report.expense3 +
-							report.expense4 +
-							report.expense5;
-					});
-					setTotalIncome(income);
-					setTotalExpense(expense);
-				} catch (error) {
-					console.error(error);
-					setError("Failed to load data. Please try again later.");
-				} finally {
-					setLoading(false);
-				}
-			} else {
+				const data = await fetchReports();
+				setReports(
+					data.map((r) => ({
+						...r,
+						date:
+							r.date instanceof Date
+								? r.date.toISOString().split("T")[0]
+								: r.date,
+					})),
+				);
+			} catch {
+				setError("Failed to load data.");
+			} finally {
 				setLoading(false);
 			}
 		};
 
-		fetchUserData();
-	}, [isAuthenticated, selectedMonth, selectedYear]);
+		fetchData();
+	}, [isAuthenticated]);
 
-	const content = useMemo(() => {
-		if (loading) {
-			return (
-				<div className="flex justify-center items-center h-screen">
-					<p className="text-gray-500 text-lg animate-pulse">Loading...</p>
-				</div>
-			);
-		}
+	// Reports in selected range
+	const rangeReports = useMemo(() => {
+		const now = new Date();
+		const pastDate = new Date();
+		pastDate.setDate(now.getDate() - rangeDays);
 
-		if (error) {
-			return (
-				<div className="flex justify-center items-center h-screen">
-					<p className="text-red-500 text-lg">{error}</p>
-				</div>
-			);
-		}
+		return reports.filter((r) => {
+			const d = new Date(r.date);
+			return d >= pastDate && d <= now;
+		});
+	}, [reports, rangeDays]);
 
-		if (!isAuthenticated) {
-			return (
-				<div className="flex justify-center items-center h-screen">
-					<h1 className="text-3xl font-bold text-gray-700">404 | My Planner</h1>
-				</div>
-			);
-		}
+	// Range stats with expense breakdown
+	const stats = useMemo(() => {
+		let income = 0;
+		let expense1 = 0;
+		let expense2 = 0;
+		let expense3 = 0;
+		let expense4 = 0;
+		let expense5 = 0;
 
+		rangeReports.forEach((r) => {
+			income += r.total;
+			expense1 += r.expense1;
+			expense2 += r.expense2;
+			expense3 += r.expense3;
+			expense4 += r.expense4;
+			expense5 += r.expense5;
+		});
+
+		const totalExpense = expense1 + expense2 + expense3 + expense4 + expense5;
+
+		return {
+			bookings: rangeReports.length,
+			income,
+			totalExpense,
+			profit: income - totalExpense,
+			expense1,
+			expense2,
+			expense3,
+			expense4,
+			expense5,
+		};
+	}, [rangeReports]);
+
+	// Chart data (daily)
+	const chartData = useMemo(() => {
+		const map: Record<string, { income: number; expense: number }> = {};
+
+		rangeReports.forEach((r) => {
+			const key = new Date(r.date).toISOString().split("T")[0];
+
+			if (!map[key]) {
+				map[key] = { income: 0, expense: 0 };
+			}
+
+			map[key].income += r.total;
+			map[key].expense +=
+				r.expense1 + r.expense2 + r.expense3 + r.expense4 + r.expense5;
+		});
+
+		return Object.entries(map)
+			.sort(([a], [b]) => (a > b ? 1 : -1))
+			.map(([date, v]) => ({
+				date,
+				income: v.income,
+				expense: v.expense,
+				profit: v.income - v.expense,
+			}));
+	}, [rangeReports]);
+
+	if (loading)
+		return <div className="p-10 text-center text-gray-500">Loading...</div>;
+	if (error)
+		return <div className="p-10 text-center text-red-500">{error}</div>;
+	if (!isAuthenticated)
 		return (
-			<div className="max-w-7xl mx-auto p-4">
-				{/* Header */}
-				<div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
-					<h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-0">
-						Welcome, {username}!
-					</h1>
-
-					<div className="flex gap-4">
-						<select
-							value={selectedMonth ?? ""}
-							onChange={(e) => setSelectedMonth(Number(e.target.value) || null)}
-							className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-						>
-							<option value="">All Months</option>
-							{Array.from({ length: 12 }, (_, i) => (
-								<option key={i} value={i}>
-									{new Date(0, i).toLocaleString("default", {
-										month: "long",
-									})}
-								</option>
-							))}
-						</select>
-
-						<select
-							value={selectedYear ?? ""}
-							onChange={(e) => setSelectedYear(Number(e.target.value) || null)}
-							className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-						>
-							<option value="">All Years</option>
-							{Array.from({ length: 6 }, (_, i) => (
-								<option key={i} value={2020 + i}>
-									{2020 + i}
-								</option>
-							))}
-						</select>
-					</div>
-				</div>
-
-				{/* Dashboard Cards */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-					<div className="bg-white shadow rounded-lg p-6 border border-gray-200">
-						<p className="text-gray-500 font-medium">Reports in the past</p>
-						<span className="text-2xl font-bold text-gray-800">
-							{pastReportsCount}
-						</span>
-					</div>
-
-					<div className="bg-white shadow rounded-lg p-6 border border-gray-200">
-						<p className="text-gray-500 font-medium">Reports in the future</p>
-						<span className="text-2xl font-bold text-gray-800">
-							{futureReportsCount}
-						</span>
-					</div>
-
-					<div className="bg-white shadow rounded-lg p-6 border border-gray-200">
-						<p className="text-gray-500 font-medium">
-							Total Income for the Month
-						</p>
-						<span className="text-2xl font-bold text-green-600">
-							Rs {totalIncome + totalExpense}
-						</span>
-					</div>
-
-					<div className="bg-white shadow rounded-lg p-6 border border-gray-200">
-						<p className="text-gray-500 font-medium">
-							Total Profit for the Month
-						</p>
-						<span className="text-2xl font-bold text-blue-600">
-							Rs {totalIncome}
-						</span>
-					</div>
-
-					<div className="bg-white shadow rounded-lg p-6 border border-gray-200">
-						<p className="text-gray-500 font-medium">
-							Total Expenses for the Month
-						</p>
-						<span className="text-2xl font-bold text-red-600">
-							Rs {totalExpense}
-						</span>
-					</div>
-				</div>
+			<div className="p-10 text-center text-3xl font-bold text-gray-700">
+				404 | My Planner
 			</div>
 		);
-	}, [
-		loading,
-		error,
-		isAuthenticated,
-		username,
-		pastReportsCount,
-		futureReportsCount,
-		totalIncome,
-		totalExpense,
-		selectedMonth,
-		selectedYear,
-	]);
 
-	return content;
+	return (
+		<div className="max-w-7xl mx-auto p-4 space-y-8">
+			<h1 className="text-3xl font-bold">Welcome, {username} 👋</h1>
+			{/* Range selector */}
+			<div className="flex gap-3">
+				{[30, 60, 90].map((d) => (
+					<button
+						key={d}
+						onClick={() => setRangeDays(d as 30 | 60 | 90)}
+						className={`px-4 py-2 border rounded ${
+							rangeDays === d ? "bg-blue-600 text-white" : ""
+						}`}
+					>
+						Last {d} Days
+					</button>
+				))}
+			</div>
+			{/* Main stats */}
+			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+				<Card title="Bookings" value={stats.bookings} />
+				<Card title="Income" value={`Rs ${stats.income}`} />
+				<Card title="Total Expenses" value={`Rs ${stats.totalExpense}`} />
+				<Card title="Profit" value={`Rs ${stats.profit}`} />
+			</div>
+
+			{/* Expense breakdown */}
+			<div>
+				<h2 className="text-xl font-bold mb-3">Expense Breakdown</h2>
+				<div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+					<Card title="Food & Bev" value={`Rs ${stats.expense1}`} />
+					<Card title="Fuel" value={`Rs ${stats.expense2}`} />
+					<Card title="Staff" value={`Rs ${stats.expense3}`} />
+					<Card title="Commission" value={`Rs ${stats.expense4}`} />
+					<Card title="Others" value={`Rs ${stats.expense5}`} />
+				</div>
+			</div>
+			{/* Chart */}
+			<div className="bg-white p-6 rounded shadow">
+				<h2 className="text-xl font-bold mb-4">
+					Daily Performance (last {rangeDays} days)
+				</h2>
+				<ResponsiveContainer width="100%" height={300}>
+					<LineChart data={chartData}>
+						<CartesianGrid strokeDasharray="3 3" />
+						<XAxis dataKey="date" />
+						<YAxis />
+						<Tooltip />
+						<Line type="monotone" dataKey="income" />
+						<Line type="monotone" dataKey="expense" />
+						<Line type="monotone" dataKey="profit" />
+					</LineChart>
+				</ResponsiveContainer>
+			</div>
+		</div>
+	);
 };
+
+const Card = ({ title, value }: { title: string; value: string | number }) => (
+	<div className="bg-white border shadow rounded p-4">
+		<p className="text-gray-500">{title}</p>
+		<p className="text-2xl font-bold">{value}</p>
+	</div>
+);
 
 export default Home;
