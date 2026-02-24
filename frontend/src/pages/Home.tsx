@@ -29,7 +29,11 @@ const Home = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const [rangeDays, setRangeDays] = useState<30 | 60 | 90>(30);
+	const now = new Date();
+	const [selectedYear, setSelectedYear] = useState<number>(now.getFullYear());
+	const [selectedMonth, setSelectedMonth] = useState<number>(
+		now.getMonth() + 1,
+	);
 
 	// Fetch once
 	useEffect(() => {
@@ -61,19 +65,26 @@ const Home = () => {
 		fetchData();
 	}, [isAuthenticated]);
 
-	// Reports in selected range
-	const rangeReports = useMemo(() => {
-		const now = new Date();
-		const pastDate = new Date();
-		pastDate.setDate(now.getDate() - rangeDays);
+	// Extract available years dynamically
+	const availableYears = useMemo(() => {
+		const years = new Set<number>();
+		reports.forEach((r) => {
+			years.add(new Date(r.date).getFullYear());
+		});
+		return Array.from(years).sort((a, b) => b - a);
+	}, [reports]);
 
+	// Filter by selected month & year
+	const monthReports = useMemo(() => {
 		return reports.filter((r) => {
 			const d = new Date(r.date);
-			return d >= pastDate && d <= now;
+			return (
+				d.getFullYear() === selectedYear && d.getMonth() + 1 === selectedMonth
+			);
 		});
-	}, [reports, rangeDays]);
+	}, [reports, selectedYear, selectedMonth]);
 
-	// Range stats with expense breakdown
+	// Monthly stats
 	const stats = useMemo(() => {
 		let income = 0;
 		let expense1 = 0;
@@ -82,7 +93,7 @@ const Home = () => {
 		let expense4 = 0;
 		let expense5 = 0;
 
-		rangeReports.forEach((r) => {
+		monthReports.forEach((r) => {
 			income += r.total;
 			expense1 += r.expense1;
 			expense2 += r.expense2;
@@ -94,7 +105,7 @@ const Home = () => {
 		const totalExpense = expense1 + expense2 + expense3 + expense4 + expense5;
 
 		return {
-			bookings: rangeReports.length,
+			bookings: monthReports.length,
 			income,
 			totalExpense,
 			profit: income - totalExpense,
@@ -104,14 +115,14 @@ const Home = () => {
 			expense4,
 			expense5,
 		};
-	}, [rangeReports]);
+	}, [monthReports]);
 
 	// Chart data (daily)
 	const chartData = useMemo(() => {
 		const map: Record<string, { income: number; expense: number }> = {};
 
-		rangeReports.forEach((r) => {
-			const key = new Date(r.date).toISOString().split("T")[0];
+		monthReports.forEach((r) => {
+			const key = r.date;
 
 			if (!map[key]) {
 				map[key] = { income: 0, expense: 0 };
@@ -130,7 +141,7 @@ const Home = () => {
 				expense: v.expense,
 				profit: v.income - v.expense,
 			}));
-	}, [rangeReports]);
+	}, [monthReports]);
 
 	if (loading)
 		return <div className="p-10 text-center text-gray-500">Loading...</div>;
@@ -146,20 +157,42 @@ const Home = () => {
 	return (
 		<div className="max-w-7xl mx-auto p-4 space-y-8">
 			<h1 className="text-3xl font-bold">Welcome, {username} 👋</h1>
-			{/* Range selector */}
-			<div className="flex gap-3">
-				{[30, 60, 90].map((d) => (
-					<button
-						key={d}
-						onClick={() => setRangeDays(d as 30 | 60 | 90)}
-						className={`px-4 py-2 border rounded ${
-							rangeDays === d ? "bg-blue-600 text-white" : ""
-						}`}
+
+			{/* Filters */}
+			<div className="flex flex-wrap items-center gap-4">
+				<div>
+					<label className="block text-sm font-medium mb-1">Year</label>
+					<select
+						value={selectedYear}
+						onChange={(e) => setSelectedYear(Number(e.target.value))}
+						className="border rounded px-3 py-2"
 					>
-						Last {d} Days
-					</button>
-				))}
+						{availableYears.map((year) => (
+							<option key={year} value={year}>
+								{year}
+							</option>
+						))}
+					</select>
+				</div>
+
+				<div>
+					<label className="block text-sm font-medium mb-1">Month</label>
+					<select
+						value={selectedMonth}
+						onChange={(e) => setSelectedMonth(Number(e.target.value))}
+						className="border rounded px-3 py-2"
+					>
+						{Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+							<option key={m} value={m}>
+								{new Date(0, m - 1).toLocaleString("default", {
+									month: "long",
+								})}
+							</option>
+						))}
+					</select>
+				</div>
 			</div>
+
 			{/* Main stats */}
 			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 				<Card title="Bookings" value={stats.bookings} />
@@ -179,10 +212,11 @@ const Home = () => {
 					<Card title="Others" value={`Rs ${stats.expense5}`} />
 				</div>
 			</div>
+
 			{/* Chart */}
 			<div className="bg-white p-6 rounded shadow">
 				<h2 className="text-xl font-bold mb-4">
-					Daily Performance (last {rangeDays} days)
+					Daily Performance ({selectedMonth}/{selectedYear})
 				</h2>
 				<ResponsiveContainer width="100%" height={300}>
 					<LineChart data={chartData}>
