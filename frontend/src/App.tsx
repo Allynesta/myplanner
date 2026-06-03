@@ -12,6 +12,7 @@ import Nav from "./components/Nav";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import { AuthProvider } from "./AuthContext";
+import { ToastProvider } from "./ToastContext";
 import ProtectedRoute from "./ProtectedRoute";
 
 // Define the structure of the data each report will have
@@ -46,6 +47,7 @@ const App: React.FC = () => {
 
 	return (
 		<AuthProvider>
+			<ToastProvider>
 			<Router>
 				<Nav />
 				<Routes>
@@ -75,6 +77,7 @@ const App: React.FC = () => {
 					</Route>
 				</Routes>
 			</Router>
+			</ToastProvider>
 		</AuthProvider>
 	);
 };

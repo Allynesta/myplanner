@@ -2,90 +2,70 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login, changePassword } from "../services/authService";
 import { useAuth } from "../AuthContext";
+import { useToast } from "../ToastContext";
 import "../styles/auth.css";
 
 type Mode = "login" | "change";
 
 const Login: React.FC = () => {
-	// Main shared fields
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-
-	// Mode control
 	const [mode, setMode] = useState<Mode>("login");
-
-	// Change password fields
 	const [currentPwd, setCurrentPwd] = useState("");
 	const [newPwd, setNewPwd] = useState("");
 	const [confirmNewPwd, setConfirmNewPwd] = useState("");
-	const [loadingChange, setLoadingChange] = useState(false);
+	const [loading, setLoading] = useState(false);
 
 	const { login: authLogin } = useAuth();
+	const { showToast } = useToast();
 	const navigate = useNavigate();
 
-	/* -------------------------------------- */
-	/* LOGIN SUBMIT                            */
-	/* -------------------------------------- */
 	const handleLogin = async (e: React.FormEvent) => {
 		e.preventDefault();
-
+		setLoading(true);
 		try {
 			const response = await login(username, password);
 			authLogin(response.data.token);
-			alert("User logged in successfully");
-			navigate("/#");
+			showToast("Logged in successfully!", "success");
+			navigate("/");
 		} catch (error) {
 			console.error(error);
-			alert("Invalid username or password");
+			showToast("Invalid username or password", "error");
+		} finally {
+			setLoading(false);
 		}
 	};
 
-	/* -------------------------------------- */
-	/* CHANGE PASSWORD SUBMIT                  */
-	/* -------------------------------------- */
 	const handleChangePassword = async (e: React.FormEvent) => {
 		e.preventDefault();
-
 		if (newPwd !== confirmNewPwd) {
-			alert("New passwords do not match");
+			showToast("New passwords do not match", "error");
 			return;
 		}
-
 		if (newPwd.length < 8) {
-			alert("Password must be at least 8 characters");
+			showToast("Password must be at least 8 characters", "error");
 			return;
 		}
-
+		setLoading(true);
 		try {
-			setLoadingChange(true);
-
 			const resp = await changePassword(username, currentPwd, newPwd);
-			alert(resp.data?.message || "Password updated");
-
+			showToast(resp.data?.message || "Password updated successfully!", "success");
 			setCurrentPwd("");
 			setNewPwd("");
 			setConfirmNewPwd("");
-
-			// return back to login mode
 			setMode("login");
 		} catch (err) {
 			console.error("Change password error:", err);
-
 			let msg = "Failed to change password";
 			if (typeof err === "object" && err !== null) {
 				const e = err as { response?: { data?: { message?: string } } };
 				if (e.response?.data?.message) msg = e.response.data.message;
 			}
-
-			alert(msg);
+			showToast(msg, "error");
 		} finally {
-			setLoadingChange(false);
+			setLoading(false);
 		}
 	};
-
-	/* -------------------------------------- */
-	/* RENDER                                  */
-	/* -------------------------------------- */
 
 	return (
 		<div className="auth-container">
@@ -97,7 +77,6 @@ const Login: React.FC = () => {
 				className="auth-form"
 				onSubmit={mode === "login" ? handleLogin : handleChangePassword}
 			>
-				{/* Username always required */}
 				<div className="auth-form-group">
 					<label>Username:</label>
 					<input
@@ -108,7 +87,6 @@ const Login: React.FC = () => {
 					/>
 				</div>
 
-				{/* LOGIN MODE ----------------------------------------- */}
 				{mode === "login" && (
 					<>
 						<div className="auth-form-group">
@@ -119,11 +97,10 @@ const Login: React.FC = () => {
 								onChange={(e) => setPassword(e.target.value)}
 								required
 							/>
-							<button className="btn-submit" type="submit">
-								Login
+							<button className="btn-submit" type="submit" disabled={loading}>
+								{loading ? "Logging in…" : "Login"}
 							</button>
 						</div>
-
 						<button
 							type="button"
 							className="btn-link"
@@ -134,7 +111,6 @@ const Login: React.FC = () => {
 					</>
 				)}
 
-				{/* CHANGE PASSWORD MODE -------------------------------- */}
 				{mode === "change" && (
 					<>
 						<div className="auth-form-group">
@@ -146,7 +122,6 @@ const Login: React.FC = () => {
 								required
 							/>
 						</div>
-
 						<div className="auth-form-group">
 							<label>New password:</label>
 							<input
@@ -156,7 +131,6 @@ const Login: React.FC = () => {
 								required
 							/>
 						</div>
-
 						<div className="auth-form-group">
 							<label>Confirm new password:</label>
 							<input
@@ -167,15 +141,10 @@ const Login: React.FC = () => {
 							/>
 						</div>
 						<div className="auth-form-group">
-							<button
-								className="btn-submit"
-								type="submit"
-								disabled={loadingChange}
-							>
-								{loadingChange ? "Updating..." : "Update Password"}
+							<button className="btn-submit" type="submit" disabled={loading}>
+								{loading ? "Updating…" : "Update Password"}
 							</button>
 						</div>
-
 						<button
 							type="button"
 							className="btn-link"
@@ -186,10 +155,9 @@ const Login: React.FC = () => {
 					</>
 				)}
 			</form>
-			<Link to="/register" className="hover:text-blue-400">
-				<a className="btn-submit" type="submit">
-					Register
-				</a>
+
+			<Link to="/register" className="btn-submit block text-center mt-2">
+				Register
 			</Link>
 		</div>
 	);

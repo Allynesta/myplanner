@@ -37,11 +37,18 @@ const Nav = () => {
 						{isAuthenticated ? (
 							<>
 								<Link
+									to="/"
+									className="hover:text-blue-400"
+									onClick={handleNavLinkClick}
+								>
+									Overview
+								</Link>
+								<Link
 									to="/Dashboard"
 									className="hover:text-blue-400"
 									onClick={handleNavLinkClick}
 								>
-									Dashboard
+									Add Report
 								</Link>
 								<Link
 									to="/Report-Table"
@@ -116,11 +123,18 @@ const Nav = () => {
 					{isAuthenticated ? (
 						<>
 							<Link
+								to="/"
+								className="block px-3 py-2 rounded hover:bg-gray-700"
+								onClick={handleNavLinkClick}
+							>
+								Overview
+							</Link>
+							<Link
 								to="/Dashboard"
 								className="block px-3 py-2 rounded hover:bg-gray-700"
 								onClick={handleNavLinkClick}
 							>
-								Dashboard
+								Add Report
 							</Link>
 							<Link
 								to="/Report-Table"
