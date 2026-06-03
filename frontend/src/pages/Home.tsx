@@ -63,6 +63,51 @@ const Home = () => {
 		fetchData();
 	}, [isAuthenticated]);
 
+	// All derived data must be computed via hooks BEFORE any early returns
+	const availableYears = useMemo(
+		() =>
+			Array.from(new Set(reports.map((r) => new Date(r.date).getFullYear()))).sort(
+				(a, b) => b - a
+			),
+		[reports]
+	);
+
+	const monthReports = useMemo(
+		() =>
+			reports.filter((r) => {
+				const d = new Date(r.date);
+				return d.getFullYear() === selectedYear && d.getMonth() + 1 === selectedMonth;
+			}),
+		[reports, selectedYear, selectedMonth]
+	);
+
+	const stats = useMemo(() => {
+		let income = 0, expense1 = 0, expense2 = 0, expense3 = 0, expense4 = 0, expense5 = 0;
+		monthReports.forEach((r) => {
+			income += r.total;
+			expense1 += r.expense1;
+			expense2 += r.expense2;
+			expense3 += r.expense3;
+			expense4 += r.expense4;
+			expense5 += r.expense5;
+		});
+		const totalExpense = expense1 + expense2 + expense3 + expense4 + expense5;
+		return { bookings: monthReports.length, income, totalExpense, profit: income - totalExpense, expense1, expense2, expense3, expense4, expense5 };
+	}, [monthReports]);
+
+	const chartData = useMemo(() => {
+		const map: Record<string, { income: number; expense: number }> = {};
+		monthReports.forEach((r) => {
+			if (!map[r.date]) map[r.date] = { income: 0, expense: 0 };
+			map[r.date].income += r.total;
+			map[r.date].expense += r.expense1 + r.expense2 + r.expense3 + r.expense4 + r.expense5;
+		});
+		return Object.entries(map)
+			.sort(([a], [b]) => (a > b ? 1 : -1))
+			.map(([date, v]) => ({ date, income: v.income, expense: v.expense, profit: v.income - v.expense }));
+	}, [monthReports]);
+
+	// Early returns AFTER all hooks
 	if (!isAuthenticated) return <Navigate to="/login" replace />;
 
 	if (loading)
@@ -79,43 +124,6 @@ const Home = () => {
 				<p className="text-red-500 font-medium">{error}</p>
 			</div>
 		);
-
-	const availableYears = Array.from(
-		new Set(reports.map((r) => new Date(r.date).getFullYear()))
-	).sort((a, b) => b - a);
-
-	const monthReports = reports.filter((r) => {
-		const d = new Date(r.date);
-		return d.getFullYear() === selectedYear && d.getMonth() + 1 === selectedMonth;
-	});
-
-	const stats = useMemo(() => {
-		let income = 0, expense1 = 0, expense2 = 0, expense3 = 0, expense4 = 0, expense5 = 0;
-		monthReports.forEach((r) => {
-			income += r.total;
-			expense1 += r.expense1;
-			expense2 += r.expense2;
-			expense3 += r.expense3;
-			expense4 += r.expense4;
-			expense5 += r.expense5;
-		});
-		const totalExpense = expense1 + expense2 + expense3 + expense4 + expense5;
-		return { bookings: monthReports.length, income, totalExpense, profit: income - totalExpense, expense1, expense2, expense3, expense4, expense5 };
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [monthReports.length, selectedMonth, selectedYear]);
-
-	const chartData = useMemo(() => {
-		const map: Record<string, { income: number; expense: number }> = {};
-		monthReports.forEach((r) => {
-			if (!map[r.date]) map[r.date] = { income: 0, expense: 0 };
-			map[r.date].income += r.total;
-			map[r.date].expense += r.expense1 + r.expense2 + r.expense3 + r.expense4 + r.expense5;
-		});
-		return Object.entries(map)
-			.sort(([a], [b]) => (a > b ? 1 : -1))
-			.map(([date, v]) => ({ date, income: v.income, expense: v.expense, profit: v.income - v.expense }));
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [monthReports.length, selectedMonth, selectedYear]);
 
 	return (
 		<div className="max-w-7xl mx-auto p-4 space-y-8">
