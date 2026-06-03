@@ -1,7 +1,6 @@
-import { Formik, Form, Field } from "formik"; // Importing Formik components for form handling.
-import "../styles/dataform.css"; // Importing external CSS for the form styling.
+import { Formik, Form, Field, useFormikContext } from "formik";
+import "../styles/dataform.css";
 
-// Define the types for the data we will be handling in the form.
 interface FormData {
 	location: string;
 	description: string;
@@ -15,27 +14,48 @@ interface FormData {
 	payment: string;
 }
 
-// Defining the props for the DataForm component.
 interface Props {
-	onSubmit: (data: FormData) => void; // Function to handle form submission.
-	selectedDate: Date | null; // The selected date for the report.
-	initialValues?: FormData; // Optional initial values for the form (used for editing).
+	onSubmit: (data: FormData) => void;
+	selectedDate: Date | null;
+	initialValues?: FormData;
+	saving?: boolean;
 }
 
-const DataForm: React.FC<Props> = ({
-	onSubmit,
-	selectedDate,
-	initialValues,
-}) => {
-	// Main return statement that renders the form.
+const ProfitPreview = () => {
+	const { values } = useFormikContext<FormData>();
+	const income = (Number(values.pax) || 0) * (Number(values.price) || 0);
+	const expenses =
+		(Number(values.expense1) || 0) +
+		(Number(values.expense2) || 0) +
+		(Number(values.expense3) || 0) +
+		(Number(values.expense4) || 0) +
+		(Number(values.expense5) || 0);
+	const profit = income - expenses;
+
+	if (income === 0 && expenses === 0) return null;
+
+	return (
+		<div className="mt-2 p-3 bg-gray-50 rounded-lg border text-sm">
+			<div className="flex justify-between text-gray-600">
+				<span>Income (pax × price)</span>
+				<span>Rs {income.toLocaleString()}</span>
+			</div>
+			<div className="flex justify-between text-gray-600">
+				<span>Total Expenses</span>
+				<span className="text-red-500">- Rs {expenses.toLocaleString()}</span>
+			</div>
+			<div className={`flex justify-between font-bold border-t mt-1 pt-1 ${profit >= 0 ? "text-green-600" : "text-red-500"}`}>
+				<span>Profit</span>
+				<span>Rs {profit.toLocaleString()}</span>
+			</div>
+		</div>
+	);
+};
+
+const DataForm: React.FC<Props> = ({ onSubmit, selectedDate, initialValues, saving }) => {
 	return (
 		<div className="form-container">
-			<h2 className="form-title">
-				{/* Display the title based on whether initialValues exist */}
-				{initialValues ? "Edit Report" : "New Report"}
-			</h2>
 			<Formik
-				// Initial values for the form, either passed as props or default values
 				initialValues={
 					initialValues || {
 						location: "",
@@ -50,48 +70,32 @@ const DataForm: React.FC<Props> = ({
 						payment: "",
 					}
 				}
-				// Validation function to check if values meet the requirements
 				validate={(values) => {
-					const errors: Partial<Record<keyof FormData, string>> = {}; // Initialize errors as an empty object.
-					if (!values.location) {
-						errors.location = "Location is required!!";
-					}
-					if (!values.description) {
-						errors.description = "Description is required!!";
-					}
-					if (values.pax <= 0) {
-						errors.pax = "Pax must be greater than 0"; // Ensuring pax value is positive.
-					}
-					if (values.price <= 0) {
-						errors.price = "Price must be greater than 0"; // Ensuring price value is positive.
-					}
-
-					return errors; // Return the error object if there are validation issues.
+					const errors: Partial<Record<keyof FormData, string>> = {};
+					if (!values.location) errors.location = "Location is required";
+					if (!values.description) errors.description = "Description is required";
+					if (values.pax <= 0) errors.pax = "Pax must be greater than 0";
+					if (values.price <= 0) errors.price = "Price must be greater than 0";
+					return errors;
 				}}
-				// The function that runs when the form is submitted
 				onSubmit={(values, actions) => {
 					if (selectedDate) {
-						// Only submit if a date is selected
-						onSubmit(values); // Call the onSubmit prop with the form data.
-						actions.resetForm(); // Reset the form after submission.
+						onSubmit(values);
+						actions.resetForm();
 					}
 				}}
 			>
-				{/* Render the form elements inside the Formik context */}
 				{({ errors, touched }) => (
-					<Form className="data-form">
-						{/* Form group for Location field */}
+					<Form className="data-form space-y-4">
+						{/* Location */}
 						<div className="form-group">
-							<label htmlFor="location">Location:</label>
+							<label htmlFor="location">Location</label>
 							<Field
 								id="location"
 								name="location"
-								as="select" // Render this as a <select> dropdown.
-								className={
-									errors.location && touched.location ? "input-error" : ""
-								}
+								as="select"
+								className={errors.location && touched.location ? "input-error" : ""}
 							>
-								{/* Dropdown options */}
 								<option value="">Select location</option>
 								<option value="pieter both">Pieter Both</option>
 								<option value="500 pieds">500 Pieds</option>
@@ -101,104 +105,106 @@ const DataForm: React.FC<Props> = ({
 								<option value="le sud">Le Sud</option>
 								<option value="program">Program</option>
 							</Field>
-							{/* Display error message if the field is touched and invalid */}
 							{errors.location && touched.location && (
 								<div className="error-message">{errors.location}</div>
 							)}
 						</div>
 
-						{/* Form group for Description field */}
+						{/* Description */}
 						<div className="form-group">
-							<label htmlFor="description">Description:</label>
+							<label htmlFor="description">Description</label>
 							<Field
 								id="description"
 								name="description"
-								as="textarea" // Render this as a <textarea>.
-								className={
-									errors.description && touched.description ? "input-error" : ""
-								}
+								as="textarea"
+								rows={2}
+								placeholder="Brief description of the activity…"
+								className={errors.description && touched.description ? "input-error" : ""}
 							/>
-							{/* Error message for Description */}
 							{errors.description && touched.description && (
 								<div className="error-message">{errors.description}</div>
 							)}
 						</div>
 
-						{/* Form group for Pax (number of people) field */}
+						{/* Pax + Price side by side */}
+						<div className="grid grid-cols-2 gap-3">
+							<div className="form-group">
+								<label htmlFor="pax">Pax</label>
+								<Field
+									id="pax"
+									name="pax"
+									type="number"
+									min="0"
+									className={errors.pax && touched.pax ? "input-error" : ""}
+								/>
+								{errors.pax && touched.pax && (
+									<div className="error-message">{errors.pax}</div>
+								)}
+							</div>
+							<div className="form-group">
+								<label htmlFor="price">Price (Rs)</label>
+								<Field
+									id="price"
+									name="price"
+									type="number"
+									min="0"
+									className={errors.price && touched.price ? "input-error" : ""}
+								/>
+								{errors.price && touched.price && (
+									<div className="error-message">{errors.price}</div>
+								)}
+							</div>
+						</div>
+
+						{/* Expenses */}
 						<div className="form-group">
-							<label htmlFor="pax">Pax:</label>
-							<Field
-								id="pax"
-								name="pax"
-								type="number" // Render this as a number input.
-								className={errors.pax && touched.pax ? "input-error" : ""}
-							/>
-							{/* Error message for Pax */}
-							{errors.pax && touched.pax && (
-								<div className="error-message">{errors.pax}</div>
-							)}
+							<label>Expenses (Rs)</label>
+							<div className="grid grid-cols-2 gap-2 mt-1">
+								<div>
+									<label htmlFor="expense1" className="text-xs font-normal text-gray-500">Food & Bev</label>
+									<Field id="expense1" name="expense1" type="number" min="0" />
+								</div>
+								<div>
+									<label htmlFor="expense2" className="text-xs font-normal text-gray-500">Fuel</label>
+									<Field id="expense2" name="expense2" type="number" min="0" />
+								</div>
+								<div>
+									<label htmlFor="expense3" className="text-xs font-normal text-gray-500">Staff</label>
+									<Field id="expense3" name="expense3" type="number" min="0" />
+								</div>
+								<div>
+									<label htmlFor="expense4" className="text-xs font-normal text-gray-500">Commission</label>
+									<Field id="expense4" name="expense4" type="number" min="0" />
+								</div>
+								<div>
+									<label htmlFor="expense5" className="text-xs font-normal text-gray-500">Others</label>
+									<Field id="expense5" name="expense5" type="number" min="0" />
+								</div>
+							</div>
 						</div>
 
-						{/* Form group for Price field */}
+						{/* Live profit preview */}
+						<ProfitPreview />
+
+						{/* Payment */}
 						<div className="form-group">
-							<label htmlFor="price">Price:</label>
-							<Field
-								id="price"
-								name="price"
-								type="number"
-								className={errors.price && touched.price ? "input-error" : ""}
-							/>
-							{/* Error message for Price */}
-							{errors.price && touched.price && (
-								<div className="error-message">{errors.price}</div>
-							)}
+							<label>Payment Status</label>
+							<div className="flex flex-wrap gap-4 mt-1">
+								{["Not paid", "Paid by cash", "Paid by juice"].map((opt) => (
+									<label key={opt} className="flex items-center gap-2 cursor-pointer text-sm font-normal text-gray-700">
+										<Field type="radio" name="payment" value={opt} className="accent-blue-500" />
+										{opt}
+									</label>
+								))}
+							</div>
 						</div>
 
-						{/* Form group for Expenses fields */}
-						<div className="form-group">
-							<label htmlFor="expense">Expenses:</label>
-							{/* Multiple fields for different expense categories */}
-							<label htmlFor="expense1">Food & Bev:</label>
-							<Field id="expense1" name="expense1" type="number" />
-							<label htmlFor="expense2">Fuel:</label>
-							<Field id="expense2" name="expense2" type="number" />
-							<label htmlFor="expense3">Staff:</label>
-							<Field id="expense3" name="expense3" type="number" />
-							<label htmlFor="expense4">Commission:</label>
-							<Field id="expense4" name="expense4" type="number" />
-							<label htmlFor="expense5">Others:</label>
-							<Field id="expense5" name="expense5" type="number" />
-						</div>
-
-						{/* Form group for Payment options */}
-						<label htmlFor="payment">Payment:</label>
-						<div className="form-group payment">
-							<label htmlFor="payment1">Not paid</label>
-							<Field
-								id="payment1"
-								name="payment"
-								value="Not paid"
-								type="radio"
-							/>
-							<label htmlFor="payment2">Paid by cash</label>
-							<Field
-								id="payment2"
-								name="payment"
-								value="Paid by cash"
-								type="radio"
-							/>
-							<label htmlFor="payment3">Paid by juice</label>
-							<Field
-								id="payment3"
-								name="payment"
-								value="Paid by juice"
-								type="radio"
-							/>
-						</div>
-
-						{/* Submit button */}
-						<button className="btn-submit" type="submit">
-							{initialValues ? "Save Changes" : "Submit"}
+						<button
+							className="btn-submit"
+							type="submit"
+							disabled={saving}
+						>
+							{saving ? "Saving…" : initialValues ? "Save Changes" : "Submit"}
 						</button>
 					</Form>
 				)}

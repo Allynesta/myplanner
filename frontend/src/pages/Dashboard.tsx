@@ -1,19 +1,12 @@
-// Import React hooks and third-party components
 import { useState, useEffect } from "react";
-import Calendar from "react-calendar"; // Calendar UI component
-import "react-calendar/dist/Calendar.css"; // Calendar styles
-import DataForm from "../components/DataForm"; // Form component for data entry
-import Modal from "react-modal"; // Modal library
-import "../styles/dashboard.css"; // Custom styles
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import DataForm from "../components/DataForm";
+import Modal from "react-modal";
+import "../styles/dashboard.css";
+import { saveReport, fetchReports, updateReport } from "../services/authService";
+import { useToast } from "../ToastContext";
 
-// Import API service functions
-import {
-	saveReport,
-	fetchReports,
-	updateReport,
-} from "../services/authService";
-
-// Define the type for a report
 interface ReportData {
 	reportId: number;
 	location: string;
@@ -30,265 +23,284 @@ interface ReportData {
 	total: number;
 }
 
-// Props interface, although not used inside the component
 interface Props {
 	onEdit: (reportId: number, updatedData: Partial<ReportData>) => void;
 }
 
-// Set the root element for accessibility purposes
 Modal.setAppElement("#root");
 
 const Dashboard: React.FC<Props> = () => {
-	// State declarations
-	const [value, setValue] = useState<Date | null>(null); // Selected date
-	const [showForm, setShowForm] = useState(false); // Controls visibility of form modal
-	const [isEditing, setIsEditing] = useState(false); // Controls visibility of edit modal
-	const [reportData, setReportData] = useState<ReportData[]>([]); // All reports
-	const [selectedReport, setSelectedReport] = useState<ReportData | null>(null); // Report selected for detailed view/edit
-	const [reportsForDate, setReportsForDate] = useState<ReportData[]>([]); // Reports for selected date
+	const { showToast } = useToast();
+	const [value, setValue] = useState<Date | null>(null);
+	const [showForm, setShowForm] = useState(false);
+	const [isEditing, setIsEditing] = useState(false);
+	const [reportData, setReportData] = useState<ReportData[]>([]);
+	const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
+	const [reportsForDate, setReportsForDate] = useState<ReportData[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [saving, setSaving] = useState(false);
 
-	// Fetch reports from backend when component mounts
 	useEffect(() => {
 		const loadReports = async () => {
 			try {
+				setLoading(true);
 				const reports = await fetchReports();
 				setReportData(reports);
 			} catch (error) {
 				console.error("Error loading reports:", error);
+				showToast("Failed to load reports", "error");
+			} finally {
+				setLoading(false);
 			}
 		};
-
 		loadReports();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	// Handle calendar date change
 	const handleDateChange = (value: Date | Date[] | null) => {
-		if (Array.isArray(value)) {
-			setValue(value[0]); // Only use the first date if range is selected
-		} else {
-			setValue(value);
-		}
-
-		// If no report is selected, open form modal
+		const date = Array.isArray(value) ? value[0] : value;
+		setValue(date);
 		if (!selectedReport) {
 			setShowForm(true);
 		} else {
-			setSelectedReport(null); // Otherwise clear selection
+			setSelectedReport(null);
 		}
 	};
 
-	// Handle form submission to create a new report
-	const handleSubmit = async (
-		data: Omit<ReportData, "date" | "reportId" | "total">
-	) => {
-		// Create new report object
+	const handleSubmit = async (data: Omit<ReportData, "date" | "reportId" | "total">) => {
 		const newReport: ReportData = {
 			...data,
 			date: value as Date,
-			reportId: Math.floor(Math.random() * 1000), // Generate random ID
-			total:
-				data.price * data.pax - // Calculate profit
-				(data.expense1 +
-					data.expense2 +
-					data.expense3 +
-					data.expense4 +
-					data.expense5),
+			reportId: Math.floor(Math.random() * 1000),
+			total: data.price * data.pax - (data.expense1 + data.expense2 + data.expense3 + data.expense4 + data.expense5),
 		};
-
+		setSaving(true);
 		try {
-			await saveReport(newReport); // Save report to backend
-			setReportData([...reportData, newReport]); // Update local state
-			setShowForm(false); // Close modal
-			setValue(null); // Reset selected date
+			await saveReport(newReport);
+			setReportData([...reportData, newReport]);
+			setShowForm(false);
+			setValue(null);
+			showToast("Report saved successfully!", "success");
 		} catch (error) {
 			console.error("Error saving report:", error);
+			showToast("Failed to save report", "error");
+		} finally {
+			setSaving(false);
 		}
 	};
 
-	// Handle clicking on a specific date in the calendar
 	const handleDateClick = (date: Date) => {
-		// Filter reports matching that date
 		const reports = reportData.filter(
 			(report) => report.date.toLocaleDateString() === date.toLocaleDateString()
 		);
-
 		if (reports.length > 0) {
-			setReportsForDate(reports); // Show list modal if reports exist
+			setReportsForDate(reports);
 			setShowForm(false);
 		} else {
-			setReportsForDate([]); // Clear reports list otherwise
+			setReportsForDate([]);
 		}
-
-		setValue(date); // Update selected date
-		setSelectedReport(null); // Clear selection
+		setValue(date);
+		setSelectedReport(null);
 	};
 
-	// Custom content for calendar tiles (dots or empty indicators)
 	const tileContent = ({ date, view }: { date: Date; view: string }) => {
 		if (view === "month") {
 			const reports = reportData.filter(
-				(report) =>
-					report.date.toLocaleDateString() === date.toLocaleDateString()
+				(report) => report.date.toLocaleDateString() === date.toLocaleDateString()
 			);
-
-			// Return indicator box if there are reports for the date
 			return reports.length > 0 ? (
 				<div
 					className="indicator"
 					onClick={(e) => {
-						e.stopPropagation(); // Prevent calendar date change
+						e.stopPropagation();
 						handleDateClick(date);
 					}}
 				>
 					<div className="indicator-box"></div>
 				</div>
 			) : (
-				// Empty clickable box to add new report
-				<div
-					className="empty-indicator"
-					onClick={() => setShowForm(true)}
-				></div>
+				<div className="empty-indicator" onClick={() => setShowForm(true)}></div>
 			);
 		}
 		return null;
 	};
 
-	// Handle editing a report
 	const handleEdit = async (updatedData: Partial<ReportData>) => {
-		if (selectedReport) {
-			// Merge updated fields with original report
-			const updatedReport = {
-				...selectedReport,
-				...updatedData,
-			};
-
-			// Recalculate total if needed
-			if (
-				updatedReport.pax !== undefined &&
-				updatedReport.price !== undefined &&
-				updatedReport.expense1 !== undefined &&
-				updatedReport.expense2 !== undefined &&
-				updatedReport.expense3 !== undefined &&
-				updatedReport.expense4 !== undefined &&
-				updatedReport.expense5 !== undefined
-			) {
-				updatedReport.total =
-					updatedReport.pax * updatedReport.price -
-					(updatedReport.expense1 +
-						updatedReport.expense2 +
-						updatedReport.expense3 +
-						updatedReport.expense4 +
-						updatedReport.expense5);
-			}
-
-			// Update report in backend
+		if (!selectedReport) return;
+		const updatedReport = { ...selectedReport, ...updatedData };
+		if (
+			updatedReport.pax !== undefined && updatedReport.price !== undefined &&
+			updatedReport.expense1 !== undefined && updatedReport.expense2 !== undefined &&
+			updatedReport.expense3 !== undefined && updatedReport.expense4 !== undefined &&
+			updatedReport.expense5 !== undefined
+		) {
+			updatedReport.total =
+				updatedReport.pax * updatedReport.price -
+				(updatedReport.expense1 + updatedReport.expense2 + updatedReport.expense3 +
+					updatedReport.expense4 + updatedReport.expense5);
+		}
+		setSaving(true);
+		try {
 			await updateReport(selectedReport.reportId, updatedReport);
-
-			// Update local state
-			const updatedReports = reportData.map((report) =>
-				report.reportId === selectedReport.reportId ? updatedReport : report
-			);
-
-			setReportData(updatedReports);
-			setIsEditing(false); // Close modal
-			setSelectedReport(null); // Clear selection
-			setReportsForDate([]); // Clear reports list otherwise
+			setReportData(reportData.map((r) => r.reportId === selectedReport.reportId ? updatedReport : r));
+			setIsEditing(false);
+			setSelectedReport(null);
+			setReportsForDate([]);
+			showToast("Report updated successfully!", "success");
+		} catch (error) {
+			console.error("Error updating report:", error);
+			showToast("Failed to update report", "error");
+		} finally {
+			setSaving(false);
 		}
 	};
 
 	return (
 		<div className="dashboard">
-			<h2>Dashboard</h2>
+			<div className="flex items-center justify-between mb-4">
+				<h2 className="text-2xl font-bold">Add Report</h2>
+				<p className="text-sm text-gray-500">Click any date to add a report</p>
+			</div>
 
-			{/* Calendar UI */}
-			<Calendar
-				onChange={(value) => handleDateChange(value as Date | Date[] | null)}
-				value={value}
-				className="custom-calendar"
-				tileContent={tileContent}
-			/>
-
-			{/* Form Modal for adding a new report */}
-			{showForm && (
-				<Modal isOpen={showForm} onRequestClose={() => setShowForm(false)}>
-					<DataForm onSubmit={handleSubmit} selectedDate={value as Date} />
-				</Modal>
+			{loading ? (
+				<div className="flex items-center justify-center gap-3 py-12 text-gray-500">
+					<div className="w-6 h-6 border-4 border-blue-400 border-t-transparent rounded-full animate-spin" />
+					<span>Loading calendar…</span>
+				</div>
+			) : (
+				<Calendar
+					onChange={(value) => handleDateChange(value as Date | Date[] | null)}
+					value={value}
+					className="custom-calendar"
+					tileContent={tileContent}
+				/>
 			)}
 
-			{/* Modal listing reports for a selected date */}
-			{reportsForDate.length > 0 && (
-				<Modal
-					isOpen={reportsForDate.length > 0}
-					onRequestClose={() => setReportsForDate([])}
-				>
-					<div>
-						<h2>
-							Reports for {value?.toLocaleDateString() ?? "date selected"}
-						</h2>
-						{reportsForDate.map((report) => (
-							<div
-								key={report.reportId}
-								className="report-summary"
-								onClick={() => setSelectedReport(report)}
+			{/* New report modal */}
+			<Modal
+				isOpen={showForm}
+				onRequestClose={() => setShowForm(false)}
+				className="absolute top-1/2 left-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-6 outline-none"
+				overlayClassName="fixed inset-0 bg-black/50 z-50"
+			>
+				<div className="flex justify-between items-center mb-4">
+					<h3 className="text-lg font-semibold text-gray-800">
+						New Report — {value?.toLocaleDateString()}
+					</h3>
+					<button
+						onClick={() => setShowForm(false)}
+						className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+					>
+						&times;
+					</button>
+				</div>
+				<DataForm onSubmit={handleSubmit} selectedDate={value as Date} saving={saving} />
+			</Modal>
+
+			{/* Reports list for a date */}
+			<Modal
+				isOpen={reportsForDate.length > 0}
+				onRequestClose={() => setReportsForDate([])}
+				className="absolute top-1/2 left-1/2 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-6 outline-none"
+				overlayClassName="fixed inset-0 bg-black/50 z-50"
+			>
+				<div className="flex justify-between items-center mb-4">
+					<h3 className="text-lg font-semibold text-gray-800">
+						{value?.toLocaleDateString()}
+					</h3>
+					<button
+						onClick={() => setReportsForDate([])}
+						className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+					>
+						&times;
+					</button>
+				</div>
+				<ul className="space-y-2">
+					{reportsForDate.map((report) => (
+						<li
+							key={report.reportId}
+							className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 cursor-pointer transition"
+							onClick={() => setSelectedReport(report)}
+						>
+							<span className="font-medium capitalize text-gray-800">{report.location}</span>
+							<span className={`text-sm font-semibold ${report.total >= 0 ? "text-green-600" : "text-red-500"}`}>
+								Rs {report.total.toLocaleString()}
+							</span>
+						</li>
+					))}
+				</ul>
+			</Modal>
+
+			{/* Report detail modal */}
+			<Modal
+				isOpen={!!selectedReport}
+				onRequestClose={() => setSelectedReport(null)}
+				className="absolute top-1/2 left-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-6 outline-none"
+				overlayClassName="fixed inset-0 bg-black/50 z-50"
+			>
+				{selectedReport && (
+					<>
+						<div className="flex justify-between items-center mb-4">
+							<h3 className="text-lg font-semibold capitalize text-gray-800">{selectedReport.location}</h3>
+							<button
+								onClick={() => setSelectedReport(null)}
+								className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
 							>
-								<p className="report-item">- {report.location}</p>
+								&times;
+							</button>
+						</div>
+						<div className="space-y-3 text-sm text-gray-700">
+							<Row label="Description" value={selectedReport.description} />
+							<Row label="Pax" value={selectedReport.pax} />
+							<Row label="Price" value={`Rs ${selectedReport.price.toLocaleString()}`} />
+							<Row label="Payment" value={selectedReport.payment} />
+							<div className="border-t pt-3">
+								<p className="font-semibold text-gray-600 mb-1">Expenses</p>
+								<div className="grid grid-cols-2 gap-1 text-gray-600">
+									<span>Food & Bev:</span><span>Rs {selectedReport.expense1.toLocaleString()}</span>
+									<span>Fuel:</span><span>Rs {selectedReport.expense2.toLocaleString()}</span>
+									<span>Staff:</span><span>Rs {selectedReport.expense3.toLocaleString()}</span>
+									<span>Commission:</span><span>Rs {selectedReport.expense4.toLocaleString()}</span>
+									<span>Others:</span><span>Rs {selectedReport.expense5.toLocaleString()}</span>
+								</div>
 							</div>
-						))}
-					</div>
-				</Modal>
-			)}
+							<div className="border-t pt-3 flex justify-between items-center">
+								<span className="font-semibold">Profit</span>
+								<span className={`text-xl font-bold ${selectedReport.total >= 0 ? "text-green-600" : "text-red-500"}`}>
+									Rs {selectedReport.total.toLocaleString()}
+								</span>
+							</div>
+						</div>
+						<button
+							onClick={() => setIsEditing(true)}
+							className="mt-5 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition font-medium"
+						>
+							Edit Report
+						</button>
+					</>
+				)}
+			</Modal>
 
-			{/* Modal displaying full details of a selected report */}
-			{selectedReport && (
-				<Modal
-					isOpen={!!selectedReport}
-					onRequestClose={() => setSelectedReport(null)}
-				>
-					<h2>Details - {selectedReport.location} </h2>
-
-					<div className="card">
-						<div>
-							<span>Location:</span> {selectedReport.location}
-						</div>
-						<div>
-							<span>Description:</span> {selectedReport.description}
-						</div>
-						<div>
-							<span>Pax:</span> {selectedReport.pax}
-						</div>
-						<div>
-							<span>Price:</span> {selectedReport.price}
-						</div>
-						<div>
-							<span>Expenses:</span>
-							<br />- Food & Bev: {selectedReport.expense1}
-							<br />- Fuel: {selectedReport.expense2}
-							<br />- Staff: {selectedReport.expense3}
-							<br />- Commission: {selectedReport.expense4}
-							<br />- Others: {selectedReport.expense5}
-						</div>
-						<div>
-							<span>Profit:</span> {selectedReport.total}
-						</div>
-						<div>
-							<span>Payment:</span> {selectedReport.payment}
-						</div>
-						{/* Edit button */}
-						<button onClick={() => setIsEditing(true)}>✏️</button>
-					</div>
-				</Modal>
-			)}
-
-			{/* Modal for editing a report */}
+			{/* Edit report modal */}
 			<Modal
 				isOpen={isEditing}
 				onRequestClose={() => setIsEditing(false)}
-				className="modal-content"
-				overlayClassName="modal-overlay"
+				className="absolute top-1/2 left-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-6 outline-none"
+				overlayClassName="fixed inset-0 bg-black/50 z-50"
 			>
+				<div className="flex justify-between items-center mb-4">
+					<h3 className="text-lg font-semibold text-gray-800">Edit Report</h3>
+					<button
+						onClick={() => setIsEditing(false)}
+						className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+					>
+						&times;
+					</button>
+				</div>
 				<DataForm
 					onSubmit={handleEdit}
 					selectedDate={selectedReport?.date ?? new Date()}
+					saving={saving}
 					initialValues={{
 						location: selectedReport?.location ?? "",
 						description: selectedReport?.description ?? "",
@@ -306,5 +318,12 @@ const Dashboard: React.FC<Props> = () => {
 		</div>
 	);
 };
+
+const Row = ({ label, value }: { label: string; value: string | number }) => (
+	<div className="flex justify-between">
+		<span className="text-gray-500">{label}</span>
+		<span className="font-medium">{value}</span>
+	</div>
+);
 
 export default Dashboard;
